@@ -1,0 +1,24 @@
+# 3. Planificación de la Implementación (Scrum)
+
+El ciclo de desarrollo ágil está estructurado en **4 Sprints**, finalizando el día 25 de este mes. Esta metodología asegura entregas incrementales y de valor constante.
+
+## 3.1 Historias de Usuario (Sprint 1 al 4)
+
+| ID | Sprint | Título | Definición de la Historia de Usuario | Criterio de Validación (Gherkin) |
+|:---|:---:|:---|:---|:---|
+| **HU-01** | 1 | Inicialización del Frontend | **Como** desarrollador,<br>**Quiero** inicializar el proyecto base con Next.js y Tailwind CSS,<br>**Para** establecer la estructura del frontend. | **Given** un entorno de desarrollo limpio<br>**When** ejecuto comandos de inicialización y arranco el servidor<br>**Then** visualizo la página por defecto en el navegador |
+| **HU-02** | 1 | Configuración de BD | **Como** desarrollador,<br>**Quiero** crear el proyecto en Supabase y aplicar el modelo de datos (6 entidades),<br>**Para** habilitar persistencia transaccional y relacional. | **Given** la consola de Supabase abierta<br>**When** ejecuto scripts SQL de creación<br>**Then** las tablas se reflejan correctamente |
+| **HU-03** | 1 | CI/CD | **Como** líder técnico,<br>**Quiero** enlazar GitHub con Vercel,<br>**Para** que cada cambio se despliegue automáticamente. | **Given** un nuevo commit en `main`<br>**When** hago push<br>**Then** Vercel detecta, compila y publica la versión |
+| **HU-04** | 1 | Prueba Cloud | **Como** administrador,<br>**Quiero** acceder a la URL pública,<br>**Para** verificar que la infraestructura opera en la nube. | **Given** el pipeline exitoso<br>**When** ingreso a la URL<br>**Then** la app carga con Status 200 OK |
+| **HU-05** | 2 | Login de Usuarios | **Como** usuario,<br>**Quiero** iniciar sesión con mis credenciales,<br>**Para** acceder a funciones de mi rol. | **Given** la página de login<br>**When** ingreso datos válidos<br>**Then** soy redirigido a mi dashboard |
+| **HU-06** | 2 | Protección de Rutas | **Como** superadmin,<br>**Quiero** bloquear el acceso anónimo y segmentar vistas por rol,<br>**Para** proteger datos sensibles. | **Given** sin sesión o rol inválido<br>**When** navego a ruta protegida<br>**Then** soy redirigido al login o bloqueado |
+| **HU-07** | 2 | Dashboard Residente | **Como** Residente,<br>**Quiero** visualizar mis invitaciones activas,<br>**Para** gestionar mis próximos invitados. | **Given** sesión como residente<br>**When** carga el panel<br>**Then** veo listado de mis invitados |
+| **HU-08** | 2 | Registrar Visita | **Como** Residente,<br>**Quiero** llenar nombre, documento, tipo de visita (ej. Social), fecha y placa,<br>**Para** autorizar a una visita y su motivo. | **Given** formulario "Nueva Visita"<br>**When** completo datos y guardo<br>**Then** visita guardada como 'Pendiente' con su respectiva etiqueta |
+| **HU-09** | 2 | Pase Híbrido | **Como** Residente,<br>**Quiero** generar automáticamente un pase híbrido,<br>**Para** disponer de QR y PIN. | **Given** registro exitoso<br>**When** el sistema procesa<br>**Then** despliega QR válido y PIN alfanumérico |
+| **HU-10** | 3 | UI en Portería | **Como** Guardia,<br>**Quiero** una vista móvil optimizada,<br>**Para** manipular fácilmente estando de pie. | **Given** ingreso desde móvil<br>**When** carga el panel<br>**Then** botones grandes y responsivos |
+| **HU-11** | 3 | Escáner QR | **Como** Guardia,<br>**Quiero** escanear el QR y verificar/añadir placa de vehículo,<br>**Para** validar la entrada con trazabilidad completa. | **Given** escáner activo<br>**When** enfoco QR y confirmo la placa<br>**Then** estado cambia a 'Ingresado' con placa registrada |
+| **HU-12** | 3 | PIN Manual | **Como** Guardia,<br>**Quiero** un buscador de PIN,<br>**Para** validar si el QR falla. | **Given** vista manual<br>**When** tecleo PIN correcto<br>**Then** datos aparecen y estado cambia a 'Ingresado' |
+| **HU-13** | 3 | Registro IA | **Como** Guardia,<br>**Quiero** que IA lea la identificación,<br>**Para** evitar teclear al registrar visitas imprevistas. | **Given** registro manual<br>**When** capturo foto y uso "Extraer"<br>**Then** API autocompleta formulario |
+| **HU-14** | 3 | Notificación n8n | **Como** Residente,<br>**Quiero** alerta en tiempo real,<br>**Para** enterarme del ingreso de mi invitado. | **Given** visita ingresada<br>**When** registro cambia en BD<br>**Then** n8n envía correo de llegada |
+| **HU-15** | 4 | Historial y Auditoría| **Como** Personal Administrativo,<br>**Quiero** tabla de accesos filtrable,<br>**Para** auditar la seguridad. | **Given** rol administrativo<br>**When** navego a Historial<br>**Then** veo tabla ordenada de ingresos |
+| **HU-16** | 4 | Control de Calidad | **Como** QA,<br>**Quiero** pruebas unitarias,<br>**Para** asegurar robustez previa entrega final. | **Given** ejecución de suite de pruebas<br>**When** evalúo generación de PIN<br>**Then** pruebas pasan en verde sin errores |
