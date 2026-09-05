@@ -90,9 +90,10 @@ Desarrollar una aplicación web (PWA) con NEXT.JS y SUPABASE que permita a los r
 * **RF-02b (Acceso Residente):** El residente debe disponer de un código QR y PIN personal permanente para acceder al condominio sin necesidad de generar un pase temporal.
 * **RF-03 (Pase Híbrido):** El sistema debe generar automáticamente un Código QR y un PIN alfanumérico por cada pase creado.
 * **RF-04 (Validación de Ingreso):** El guardia debe poder validar un pase escaneando el Código QR con la cámara o tecleando el PIN.
-* **RF-05 (Registro con IA):** El sistema debe extraer automáticamente los datos (OCR vía Gemini API) desde una foto de la cédula para visitas no anunciadas.
+* **RF-05 (Analítica con IA):** El sistema debe generar un resumen diario de actividad en lenguaje natural (vía Gemini API) mostrando total de visitas, horarios pico y apartamentos más activos.
 * **RF-06 (Trazabilidad):** El sistema debe registrar la fecha, hora exacta y guardia responsable al confirmar un ingreso.
-* **RF-07 (Notificaciones):** El sistema debe emitir una alerta automatizada (vía n8n) al residente cuando su invitado llegue.
+* **RF-07a (Notificación de llegada):** El sistema debe emitir una alerta automatizada (vía n8n) al residente cuando su invitado llegue.
+* **RF-07b (Email de bienvenida):** El sistema debe enviar un email de bienvenida con credenciales y link de acceso al crear un usuario nuevo (vía n8n).
 * **RF-08 (Auditoría):** El personal administrativo debe poder consultar y filtrar el historial global de accesos del condominio.
 
 ### Requisitos No Funcionales (RNF)
@@ -214,16 +215,17 @@ erDiagram
 ### Módulo 3: Control de Acceso (Módulo Guardia)
 | Funcionalidad | Descripción | Prioridad | Tecnología |
 | :--- | :--- | :--- | :--- |
-| Escanear código QR | Leer código de acceso mediante la cámara | Alta | Librería JS Scanner |
+| Escanear código QR | Leer código de acceso mediante la cámara | Alta | html5-qrcode |
 | Validar código PIN | Buscador manual en caso de falla del QR | Alta | Supabase Query |
-| Registro veloz con IA | Extraer texto de cédulas con cámara | Media | Gemini API |
+| Resumen diario con IA | Generar resumen de actividad del día en lenguaje natural | Media | Gemini API |
 | Registrar entrada | Marcar fecha y hora exacta de llegada | Alta | Server Action |
 
 ### Módulo 4: Historial y Notificaciones
 | Funcionalidad | Descripción | Prioridad | Tecnología |
 | :--- | :--- | :--- | :--- |
 | Ver historial | Lista cronológica de ingresos al condominio | Alta | Server Component |
-| Notificación de llegada | Alerta por correo al residente en tiempo real | Alta | n8n Webhook |
+| Notificación de llegada | Alerta por correo al residente cuando llega su invitado | Alta | n8n Webhook |
+| Email de bienvenida | Email con credenciales al crear usuario nuevo | Alta | n8n Webhook |
 | Filtrar por fecha | Buscar accesos en un rango de tiempo | Media | URL Params |
 
 ### Módulo 5: Administración (Módulo Admin)
@@ -262,8 +264,8 @@ A continuación, se detalla el **Product Backlog** estructurado del proyecto:
 | **HU-10** | 3 | UI en Portería | **Como** Guardia,<br>**Quiero** una vista móvil optimizada,<br>**Para** manipular fácilmente estando de pie. | **Given** ingreso desde móvil<br>**When** carga el panel<br>**Then** botones grandes y responsivos |
 | **HU-11** | 3 | Escáner QR | **Como** Guardia,<br>**Quiero** escanear el QR y verificar/añadir placa de vehículo,<br>**Para** validar la entrada con trazabilidad completa. | **Given** escáner activo<br>**When** enfoco QR y confirmo la placa<br>**Then** estado cambia a 'Ingresado' con placa registrada |
 | **HU-12** | 3 | PIN Manual | **Como** Guardia,<br>**Quiero** un buscador de PIN,<br>**Para** validar si el QR falla. | **Given** vista manual<br>**When** tecleo PIN correcto<br>**Then** datos aparecen y estado cambia a 'Ingresado' |
-| **HU-13** | 3 | Registro IA | **Como** Guardia,<br>**Quiero** que IA lea la identificación,<br>**Para** evitar teclear al registrar visitas imprevistas. | **Given** registro manual<br>**When** capturo foto y uso "Extraer"<br>**Then** API autocompleta formulario |
-| **HU-14** | 3 | Notificación n8n | **Como** Residente,<br>**Quiero** alerta en tiempo real,<br>**Para** enterarme del ingreso de mi invitado. | **Given** visita ingresada<br>**When** registro cambia en BD<br>**Then** n8n envía correo de llegada |
+| **HU-13** | 3 | Resumen IA | **Como** Administrativo,<br>**Quiero** ver un resumen diario de actividad generado por IA,<br>**Para** entender rápido las tendencias de visitas. | **Given** sesión como admin<br>**When** accedo al dashboard<br>**Then** veo resumen con total visitas, horarios pico y apartamentos activos |
+| **HU-14** | 3 | Notificaciones n8n | **Como** Sistema,<br>**Quiero** enviar emails automatizados via n8n,<br>**Para** notificar bienvenida y llegada de visitantes. | **Given** usuario creado o visita ingresada<br>**When** se ejecuta la acción<br>**Then** n8n envía email correspondiente |
 | **HU-15** | 4 | Historial y Auditoría| **Como** Personal Administrativo,<br>**Quiero** tabla de accesos filtrable,<br>**Para** auditar la seguridad. | **Given** rol administrativo<br>**When** navego a Historial<br>**Then** veo tabla ordenada de ingresos |
 | **HU-16** | 4 | Control de Calidad | **Como** QA,<br>**Quiero** pruebas unitarias,<br>**Para** asegurar robustez previa entrega final. | **Given** ejecución de suite de pruebas<br>**When** evalúo generación de PIN<br>**Then** pruebas pasan en verde sin errores |
 | **HU-17** | 2 | QR/PIN Personal Residente | **Como** Residente,<br>**Quiero** tener un código QR y PIN personal permanente,<br>**Para** acceder al condominio sin necesidad de pase temporal. | **Given** sesión como residente<br>**When** accedo a "Mi QR"<br>**Then** veo mi código QR personal y PIN alfanumérico permanente |
@@ -299,15 +301,15 @@ A continuación, se detalla el **Product Backlog** estructurado del proyecto:
 
 ### Sprint 3: Control de Acceso + Notificaciones + Admin 🔄 EN PROGRESO
 **Objetivo:** Portería digital y panel de administración completamente funcionales.  
-**Entregable:** Vista de guardia, escáner, IA, notificaciones en tiempo real (n8n) y panel admin.
+**Entregable:** Vista de guardia, escáner, resumen IA, notificaciones en tiempo real (n8n) y panel admin.
 
 | ID | Historia de Usuario | Prioridad | Estado |
 | :--- | :--- | :--- | :--- |
-| US-010 | Diseñar UI Responsiva para Guardias | Alta | ⏳ Pendiente |
-| US-011 | Validar Entrada mediante Escáner QR | Alta | ⏳ Pendiente |
-| US-012 | Validar Entrada manual mediante PIN | Alta | ⏳ Pendiente |
-| US-013 | Registro de Visitas Imprevistas con IA | Media | ⏳ Pendiente |
-| US-014 | Configurar Notificación Automática vía n8n | Alta | ⏳ Pendiente |
+| US-010 | Diseñar UI Responsiva para Guardias | Alta | ✅ Completado |
+| US-011 | Validar Entrada mediante Escáner QR | Alta | ✅ Completado |
+| US-012 | Validar Entrada manual mediante PIN | Alta | ✅ Completado |
+| US-013 | Resumen Diario de Actividad con IA | Media | ⏳ Pendiente |
+| US-014 | Configurar Notificaciones vía n8n (bienvenida + llegada) | Alta | ⏳ Pendiente |
 | US-018 | Gestión de Usuarios (Admin) | Alta | ✅ Completado |
 | US-019 | Gestión de Propiedades (Admin) | Alta | ✅ Completado |
 | US-020 | Historial de Accesos con Tipo de Visita | Alta | ✅ Completado |

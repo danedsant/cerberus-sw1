@@ -18,8 +18,8 @@ El ciclo de desarrollo ágil está estructurado en **4 Sprints**, finalizando el
 | **HU-10** | 3 | UI en Portería | **Como** Guardia,<br>**Quiero** una vista móvil optimizada,<br>**Para** manipular fácilmente estando de pie. | **Given** ingreso desde móvil<br>**When** carga el panel<br>**Then** botones grandes y responsivos |
 | **HU-11** | 3 | Escáner QR | **Como** Guardia,<br>**Quiero** escanear el QR y verificar/añadir placa de vehículo,<br>**Para** validar la entrada con trazabilidad completa. | **Given** escáner activo<br>**When** enfoco QR y confirmo la placa<br>**Then** estado cambia a 'Ingresado' con placa registrada |
 | **HU-12** | 3 | PIN Manual | **Como** Guardia,<br>**Quiero** un buscador de PIN,<br>**Para** validar si el QR falla. | **Given** vista manual<br>**When** tecleo PIN correcto<br>**Then** datos aparecen y estado cambia a 'Ingresado' |
-| **HU-13** | 3 | Registro IA | **Como** Guardia,<br>**Quiero** que IA lea la identificación,<br>**Para** evitar teclear al registrar visitas imprevistas. | **Given** registro manual<br>**When** capturo foto y uso "Extraer"<br>**Then** API autocompleta formulario |
-| **HU-14** | 3 | Notificación n8n | **Como** Residente,<br>**Quiero** alerta en tiempo real,<br>**Para** enterarme del ingreso de mi invitado. | **Given** visita ingresada<br>**When** registro cambia en BD<br>**Then** n8n envía correo de llegada |
+| **HU-13** | 3 | Resumen IA | **Como** Administrativo,<br>**Quiero** ver un resumen diario de actividad generado por IA,<br>**Para** entender rápido las tendencias de visitas. | **Given** sesión como admin<br>**When** accedo al dashboard<br>**Then** veo resumen con total visitas, horarios pico y apartamentos activos |
+| **HU-14** | 3 | Notificaciones n8n | **Como** Sistema,<br>**Quiero** enviar emails automatizados via n8n,<br>**Para** notificar bienvenida y llegada de visitantes. | **Given** usuario creado o visita ingresada<br>**When** se ejecuta la acción<br>**Then** n8n envía email correspondiente |
 | **HU-15** | 4 | Historial y Auditoría| **Como** Personal Administrativo,<br>**Quiero** tabla de accesos filtrable,<br>**Para** auditar la seguridad. | **Given** rol administrativo<br>**When** navego a Historial<br>**Then** veo tabla ordenada de ingresos |
 | **HU-16** | 4 | Control de Calidad | **Como** QA,<br>**Quiero** pruebas unitarias,<br>**Para** asegurar robustez previa entrega final. | **Given** ejecución de suite de pruebas<br>**When** evalúo generación de PIN<br>**Then** pruebas pasan en verde sin errores |
 | **HU-17** | 2 | QR/PIN Personal Residente | **Como** Residente,<br>**Quiero** tener un código QR y PIN personal permanente,<br>**Para** acceder al condominio sin necesidad de pase temporal. | **Given** sesión como residente<br>**When** accedo a "Mi QR"<br>**Then** veo mi código QR personal y PIN alfanumérico permanente |
@@ -50,11 +50,11 @@ El ciclo de desarrollo ágil está estructurado en **4 Sprints**, finalizando el
 ### Sprint 3: Control de Acceso + Notificaciones + Admin 🔄 EN PROGRESO
 | HU | Título | Estado |
 |:---|:---|:---|
-| HU-10 | UI en Portería | ⏳ Pendiente |
-| HU-11 | Escáner QR | ⏳ Pendiente |
-| HU-12 | PIN Manual | ⏳ Pendiente |
-| HU-13 | Registro IA | ⏳ Pendiente |
-| HU-14 | Notificación n8n | ⏳ Pendiente |
+| HU-10 | UI en Portería | ✅ |
+| HU-11 | Escáner QR | ✅ |
+| HU-12 | PIN Manual | ✅ |
+| HU-13 | Resumen IA | ⏳ Pendiente |
+| HU-14 | Notificaciones n8n | ⏳ Pendiente |
 | HU-18 | Gestión de Usuarios (Admin) | ✅ |
 | HU-19 | Gestión de Propiedades (Admin) | ✅ |
 | HU-20 | Historial de Accesos (Admin) | ✅ |
@@ -69,8 +69,8 @@ El ciclo de desarrollo ágil está estructurado en **4 Sprints**, finalizando el
 ```
 Sprint 1: ████████████████████ 100% ✅
 Sprint 2: ████████████████████ 100% ✅
-Sprint 3: ████████░░░░░░░░░░░░  37% 🔄
+Sprint 3: ██████████████░░░░░░  75% 🔄
 Sprint 4: ░░░░░░░░░░░░░░░░░░░░   0% ⏳
 ```
 
-**Avance total:** 14/20 HU completadas (70%)
+**Avance total:** 16/20 HU completadas (80%)

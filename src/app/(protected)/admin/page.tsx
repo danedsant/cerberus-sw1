@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
 import { Users, Building, History, UserPlus } from 'lucide-react'
+import ResumenDelDia from '@/components/ResumenDelDia'
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
@@ -62,6 +63,11 @@ export default async function AdminDashboard() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Resumen del día con IA */}
+      <div className="mb-6">
+        <ResumenDelDia />
       </div>
 
       {/* Accesos rápidos */}

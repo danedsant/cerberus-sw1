@@ -4,6 +4,26 @@ import { createClient } from '@/lib/supabase-server'
 import { createAdminClient } from '@/lib/supabase-admin'
 import { revalidatePath } from 'next/cache'
 
+// ==================== N8N HELPERS ====================
+
+async function enviarN8n(evento: string, datos: Record<string, unknown>) {
+  const webhookUrl = process.env.N8N_WEBHOOK_URL
+  if (!webhookUrl) {
+    console.warn('N8N_WEBHOOK_URL no configurado, saltando notificación')
+    return
+  }
+
+  try {
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ evento, ...datos }),
+    })
+  } catch (error) {
+    console.error('Error al enviar a n8n:', error)
+  }
+}
+
 // ==================== USUARIOS ====================
 
 export async function crearUsuario(formData: {
@@ -67,6 +87,15 @@ export async function crearUsuario(formData: {
 
     if (vigilanteError) throw new Error('Error al crear vigilante: ' + vigilanteError.message)
   }
+
+  // 5. Enviar email de bienvenida vía n8n
+  await enviarN8n('bienvenida', {
+    email: formData.email,
+    nombre: formData.nombre,
+    apellido: formData.apellido,
+    rol: formData.rol,
+    contrasena: formData.password,
+  })
 
   revalidatePath('/admin/usuarios')
 }
@@ -159,14 +188,61 @@ export async function actualizarUsuario(formData: {
 }
 
 export async function eliminarUsuario(id: string) {
+  const supabase = await createClient()
   const supabaseAdmin = createAdminClient()
 
-  // Eliminar de auth (cascade eliminará de usuarios y tablas hijas)
+  // 1. Eliminar ingresos del residente (si es residente)
+  await supabase.from('ingresos_residentes').delete().eq('residente_id', id)
+
+  // 2. Eliminar visitas del residente (si es residente)
+  await supabase.from('visitas').delete().eq('residente_id', id)
+
+  // 3. Eliminar de auth (cascade eliminará usuarios y residentes/vigilantes)
   const { error } = await supabaseAdmin.auth.admin.deleteUser(id)
 
   if (error) throw new Error('Error al eliminar usuario: ' + error.message)
 
   revalidatePath('/admin/usuarios')
+}
+
+// ==================== NOTIFICACIONES ====================
+
+export async function notificarLlegadaVisita(visitaId: string) {
+  const supabase = await createClient()
+
+  // Obtener datos de la visita
+  const { data: visita } = await supabase
+    .from('visitas')
+    .select(`
+      id,
+      tipo_visita,
+      visitantes (nombre, apellido),
+      residentes (
+        usuarios (nombre, apellido, correo),
+        propiedades (numero_unidad)
+      )
+    `)
+    .eq('id', visitaId)
+    .single()
+
+  if (!visita) return
+
+  const visitanteRaw = visita.visitantes as unknown as { nombre: string; apellido: string } | null
+  const residenteRaw = visita.residentes as unknown as {
+    usuarios: { nombre: string; apellido: string; correo: string }
+    propiedades: { numero_unidad: string }
+  } | null
+
+  if (!residenteRaw || !visitanteRaw) return
+
+  // Enviar notificación vía n8n
+  await enviarN8n('llegada_visita', {
+    email_residente: residenteRaw.usuarios.correo,
+    nombre_residente: `${residenteRaw.usuarios.nombre} ${residenteRaw.usuarios.apellido}`,
+    propiedad: residenteRaw.propiedades.numero_unidad,
+    nombre_visitante: `${visitanteRaw.nombre} ${visitanteRaw.apellido}`,
+    tipo_visita: visita.tipo_visita,
+  })
 }
 
 // ==================== PROPIEDADES ====================
