@@ -40,8 +40,15 @@ Estos colores son universales y se utilizan estrictamente para comunicar el esta
 * **Botones Gigantes:** Los *Call to Action* (CTA) en el entorno del guardia no deben medir menos de 56px de alto (`h-14` en Tailwind) para evitar toques accidentales en momentos de apuro.
 
 ### Patrones de Navegación
-* **Residentes y Guardias (Móviles):** Utilizarán un menú de navegación inferior fijo (*Bottom Tab Bar*) con iconos simples (Ej. "Invitar", "Mis Visitas", "Perfil").
-* **Administrativo y Superadmin (Escritorio):** Utilizarán un menú lateral clásico (*Sidebar*) para visualizar cómodamente las tablas anchas del Historial de Accesos y reportes.
+* **Residentes y Guardias (Móviles):** Utilizarán un menú de navegación inferior fijo (*Bottom Tab Bar*) con iconos simples (Ej. "Mi QR", "Invitar", "Perfil").
+* **Administrativo y Superadmin (Escritorio):** Utilizarán un menú de navegación inferior fijo (*Bottom Tab Bar*) con acceso a gestión de usuarios, propiedades e historial.
+
+### BottomNavBar por Rol
+| Rol | Tabs |
+|:---|:---|
+| **Residente** | Inicio \| Mi QR \| Invitar \| Salir |
+| **Admin** | Inicio \| Usuarios \| Propiedades \| Historial \| Salir |
+| **Vigilante** | Inicio \| Escanear \| Historial \| Salir |
 
 ### Estilo de Componentes
 * **Bordes:** Ligeramente redondeados (`rounded-lg`) para suavizar la interfaz tecnológica.
@@ -58,6 +65,7 @@ Se define el uso exclusivo de los siguientes componentes gráficos para mantener
 | Contexto / Acción | Componente Lucide | Propósito Visual |
 | :--- | :--- | :--- |
 | **Navegación General** | `<Home />`, `<LogOut />`, `<User />` | Dashboard principal, botón de salida, ajustes de perfil. |
+| **Acceso Residente** | `<IdCard />` | Código QR/PIN personal permanente del residente. |
 | **Creación de Pases** | `<UserPlus />`, `<QrCode />`, `<CarFront />` | Nuevo invitado, visualización del pase QR, campo de placa de vehículo. |
 | **Acción en Portería** | `<ScanLine />`, `<Keyboard />`, `<Camera />` | Activar lector QR, búsqueda manual por PIN, IA para extraer cédula. |
 | **Estado de Seguridad**| `<ShieldCheck />`, `<ShieldAlert />` | Pantalla del guardia: Acceso Concedido (Éxito) o Acceso Denegado (Peligro). |

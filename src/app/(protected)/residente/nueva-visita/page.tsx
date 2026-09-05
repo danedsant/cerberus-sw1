@@ -1,19 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase'
 import { ArrowLeft, QrCode } from 'lucide-react'
 import Link from 'next/link'
 import { generatePin, generateQR } from '@/lib/qr'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-
 export default function NuevaVisitaPage() {
-  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [paseData, setPaseData] = useState<{
@@ -37,6 +30,7 @@ export default function NuevaVisitaPage() {
     setLoading(true)
 
     try {
+      const supabase = createClient()
       // 1. Obtener usuario actual
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('No autorizado')

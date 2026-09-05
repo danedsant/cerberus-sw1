@@ -24,7 +24,9 @@ CREATE TABLE usuarios (
 CREATE TABLE residentes (
     usuario_id UUID PRIMARY KEY REFERENCES usuarios(id) ON DELETE CASCADE,
     propiedad_id UUID NOT NULL REFERENCES propiedades(id) ON DELETE RESTRICT,
-    telefono_contacto VARCHAR(20)
+    telefono_contacto VARCHAR(20),
+    codigo_pin_personal VARCHAR(10) UNIQUE,
+    qr_token VARCHAR(255) UNIQUE
 );
 
 -- 4. Tabla de Vigilantes (extensión de Usuarios)
@@ -61,3 +63,15 @@ CREATE INDEX idx_visitas_residente ON visitas(residente_id);
 CREATE INDEX idx_visitas_estado ON visitas(estado);
 CREATE INDEX idx_visitas_fecha ON visitas(fecha_esperada);
 CREATE INDEX idx_visitas_pin ON visitas(codigo_pin);
+
+-- 7. Tabla de Ingresos de Residentes
+CREATE TABLE ingresos_residentes (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    residente_id UUID NOT NULL REFERENCES residentes(usuario_id) ON DELETE RESTRICT,
+    vigilante_id UUID REFERENCES vigilantes(usuario_id) ON DELETE SET NULL,
+    fecha_hora TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Índices para ingresos de residentes
+CREATE INDEX idx_ingresos_residente ON ingresos_residentes(residente_id);
+CREATE INDEX idx_ingresos_fecha ON ingresos_residentes(fecha_hora);

@@ -78,6 +78,7 @@ Desarrollar una aplicación web (PWA) con NEXT.JS y SUPABASE que permita a los r
 | **2** | Desarrollar módulo de creación y gestión de pases híbridos (QR/PIN). | Server Actions / Supabase RPC |
 | **3** | Implementar sistema de validación rápida y lectura biométrica/OCR en portería. | Supabase Query / Gemini API |
 | **4** | Crear historial consultable de accesos y alertas automatizadas al residente. | Server Components / n8n |
+| **5** | Generar código de acceso personal permanente (QR/PIN) para residentes. | qrcode lib / Supabase |
 
 ---
 
@@ -86,6 +87,7 @@ Desarrollar una aplicación web (PWA) con NEXT.JS y SUPABASE que permita a los r
 ### Requisitos Funcionales (RF)
 * **RF-01 (Autenticación):** El sistema debe permitir el inicio de sesión basado en roles (Residente, Vigilante, Administrativo, Superadmin) usando correo y contraseña.
 * **RF-02 (Gestión de Pases):** El residente debe poder generar un pase temporal, indicando los datos del visitante, fecha esperada, tipo de visita y vehículo.
+* **RF-02b (Acceso Residente):** El residente debe disponer de un código QR y PIN personal permanente para acceder al condominio sin necesidad de generar un pase temporal.
 * **RF-03 (Pase Híbrido):** El sistema debe generar automáticamente un Código QR y un PIN alfanumérico por cada pase creado.
 * **RF-04 (Validación de Ingreso):** El guardia debe poder validar un pase escaneando el Código QR con la cámara o tecleando el PIN.
 * **RF-05 (Registro con IA):** El sistema debe extraer automáticamente los datos (OCR vía Gemini API) desde una foto de la cédula para visitas no anunciadas.
@@ -115,7 +117,9 @@ erDiagram
     PROPIEDADES ||--o{ RESIDENTES : "habita"
     
     RESIDENTES ||--o{ VISITAS : "autoriza"
+    RESIDENTES ||--o{ INGRESOS_RESIDENTES : "ingresa"
     VIGILANTES ||--o{ VISITAS : "valida"
+    VIGILANTES ||--o{ INGRESOS_RESIDENTES : "valida"
     VISITANTES ||--o{ VISITAS : "realiza"
 
     PROPIEDADES {
@@ -136,6 +140,8 @@ erDiagram
         uuid usuario_id PK_FK
         uuid propiedad_id FK
         string telefono_contacto
+        string codigo_pin_personal UK "PIN permanente Ej. X7-456"
+        string qr_token UK "Token único para QR personal"
     }
 
     VIGILANTES {
@@ -163,6 +169,13 @@ erDiagram
         datetime fecha_creacion
         datetime fecha_hora_ingreso "Timestamp real"
     }
+
+    INGRESOS_RESIDENTES {
+        uuid id PK
+        uuid residente_id FK
+        uuid vigilante_id FK "Nulo hasta validación"
+        datetime fecha_hora "Timestamp del ingreso"
+    }
 ```
 
 ### Propósito de las Entidades
@@ -171,10 +184,11 @@ erDiagram
 | :--- | :--- | :--- |
 | **Propiedades** | `PROPIEDADES` | Estructura física del condominio (ej. apartamentos). |
 | **Usuarios** | `USUARIOS` | Entidad base de autenticación, datos biográficos comunes y Rol. |
-| **Residentes** | `RESIDENTES` | Hereda de Usuarios. Asigna la propiedad que habitan. |
+| **Residentes** | `RESIDENTES` | Hereda de Usuarios. Asigna la propiedad que habitan y su código de acceso personal permanente. |
 | **Vigilantes** | `VIGILANTES` | Hereda de Usuarios. Asigna atributos como el turno laboral. |
 | **Visitantes** | `VISITANTES` | Actores externos sin cuenta. Evita duplicar registros en visitas recurrentes. |
 | **Visitas** | `VISITAS` | Tabla transaccional (Pivote). Registra el tipo de visita, quién autoriza, vehículo, hora de llegada y guardia validador. |
+| **Ingresos Residentes** | `INGRESOS_RESIDENTES` | Registra cada ingreso de un residente usando su QR/PIN personal para trazabilidad. |
 
 ---
 
@@ -188,13 +202,14 @@ erDiagram
 | Cierre de sesión | Destrucción de sesión segura | Alta | Supabase Auth |
 | Protección de rutas | Middleware de protección según rol del usuario | Alta | Next.js Middleware |
 
-### Módulo 2: Invitaciones (Módulo Residente)
+### Módulo 2: Invitaciones y Acceso (Módulo Residente)
 | Funcionalidad | Descripción | Prioridad | Tecnología |
 | :--- | :--- | :--- | :--- |
 | Crear invitación | Formulario con datos del visitante | Alta | Server Action |
 | Generar código híbrido | Generación de imagen QR y PIN único | Alta | Supabase RPC |
 | Listar invitaciones | Ver pases pendientes del residente | Alta | Server Component |
 | Cancelar invitación | Cambiar estado de la visita a "Cancelado" | Media | Server Action |
+| Mi QR / PIN personal | Código de acceso permanente del residente | Alta | qrcode lib |
 
 ### Módulo 3: Control de Acceso (Módulo Guardia)
 | Funcionalidad | Descripción | Prioridad | Tecnología |
@@ -210,6 +225,14 @@ erDiagram
 | Ver historial | Lista cronológica de ingresos al condominio | Alta | Server Component |
 | Notificación de llegada | Alerta por correo al residente en tiempo real | Alta | n8n Webhook |
 | Filtrar por fecha | Buscar accesos en un rango de tiempo | Media | URL Params |
+
+### Módulo 5: Administración (Módulo Admin)
+| Funcionalidad | Descripción | Prioridad | Tecnología |
+| :--- | :--- | :--- | :--- |
+| Gestionar usuarios | Crear, editar, eliminar residentes y vigilantes | Alta | Server Action |
+| Gestionar propiedades | Crear, editar, eliminar unidades del condominio | Alta | Server Action |
+| Historial de accesos | Tabla filtrable con tipo de visita y datos completos | Alta | Server Component |
+| Dashboard admin | Resumen de estadísticas del sistema | Media | Server Component |
 
 ---
 
@@ -243,43 +266,51 @@ A continuación, se detalla el **Product Backlog** estructurado del proyecto:
 | **HU-14** | 3 | Notificación n8n | **Como** Residente,<br>**Quiero** alerta en tiempo real,<br>**Para** enterarme del ingreso de mi invitado. | **Given** visita ingresada<br>**When** registro cambia en BD<br>**Then** n8n envía correo de llegada |
 | **HU-15** | 4 | Historial y Auditoría| **Como** Personal Administrativo,<br>**Quiero** tabla de accesos filtrable,<br>**Para** auditar la seguridad. | **Given** rol administrativo<br>**When** navego a Historial<br>**Then** veo tabla ordenada de ingresos |
 | **HU-16** | 4 | Control de Calidad | **Como** QA,<br>**Quiero** pruebas unitarias,<br>**Para** asegurar robustez previa entrega final. | **Given** ejecución de suite de pruebas<br>**When** evalúo generación de PIN<br>**Then** pruebas pasan en verde sin errores |
+| **HU-17** | 2 | QR/PIN Personal Residente | **Como** Residente,<br>**Quiero** tener un código QR y PIN personal permanente,<br>**Para** acceder al condominio sin necesidad de pase temporal. | **Given** sesión como residente<br>**When** accedo a "Mi QR"<br>**Then** veo mi código QR personal y PIN alfanumérico permanente |
+| **HU-18** | 3 | Gestión de Usuarios (Admin) | **Como** Administrativo,<br>**Quiero** registrar, editar y eliminar usuarios del sistema,<br>**Para** gestionar residentes, vigilantes y personal. | **Given** sesión como admin<br>**When** navego a Usuarios<br>**Then** puedo crear, editar y eliminar usuarios |
+| **HU-19** | 3 | Gestión de Propiedades (Admin) | **Como** Administrativo,<br>**Quiero** registrar y administrar unidades del condominio,<br>**Para** asignar propiedades a residentes. | **Given** sesión como admin<br>**When** navego a Propiedades<br>**Then** puedo crear, editar y eliminar unidades |
+| **HU-20** | 3 | Historial de Accesos (Admin) | **Como** Administrativo,<br>**Quiero** consultar el historial de ingresos con tipo de visita,<br>**Para** auditar la seguridad del condominio. | **Given** sesión como admin<br>**When** navego a Historial<br>**Then** veo tabla filtrable de accesos con tipo de visita |
 
 ### Desglose del Sprint Backlog (Asignación)
 
-#### Sprint 1: Configuración + Setup Inicial
+#### Sprint 1: Configuración + Setup Inicial ✅ COMPLETADO
 **Objetivo:** Base de datos relacional y despliegue continuo operativos.  
-**Entregable:** Repositorio público, pipeline de Vercel y esquema SQL (6 entidades) aplicado.
+**Entregable:** Repositorio público, pipeline de Vercel y esquema SQL (7 entidades) aplicado.
 
 | ID | Historia de Usuario | Prioridad | Estado |
 | :--- | :--- | :--- | :--- |
-| US-001 | Inicialización del Frontend (Next.js + Tailwind) | Alta | Pendiente |
-| US-002 | Configuración de Base de Datos y Diagrama ER | Alta | Pendiente |
-| US-003 | Configurar Repositorio y CI/CD en Vercel | Alta | Pendiente |
-| US-004 | Prueba de Despliegue en la Nube | Alta | Pendiente |
+| US-001 | Inicialización del Frontend (Next.js + Tailwind) | Alta | ✅ Completado |
+| US-002 | Configuración de Base de Datos y Diagrama ER | Alta | ✅ Completado |
+| US-003 | Configurar Repositorio y CI/CD en Vercel | Alta | ✅ Completado |
+| US-004 | Prueba de Despliegue en la Nube | Alta | ✅ Completado |
 
-### Sprint 2: Autenticación + Core Residente
+### Sprint 2: Autenticación + Core Residente ✅ COMPLETADO
 **Objetivo:** App con login seguro y generación de pases funcionando.  
-**Entregable:** Dashboard de residente con formulario y creación de pases híbridos.
+**Entregable:** Dashboard de residente con formulario, creación de pases híbridos y código de acceso personal.
 
 | ID | Historia de Usuario | Prioridad | Estado |
 | :--- | :--- | :--- | :--- |
-| US-005 | Implementar Login de Usuarios y Guardias | Alta | Pendiente |
-| US-006 | Proteger Rutas y Middleware | Alta | Pendiente |
-| US-007 | Desarrollar Dashboard Residente y Lista de Pases | Alta | Pendiente |
-| US-008 | Formulario de Registro (con Tipo de Visita y Vehículo) | Alta | Pendiente |
-| US-009 | Generación del Pase Híbrido (QR + PIN) | Alta | Pendiente |
+| US-005 | Implementar Login de Usuarios y Guardias | Alta | ✅ Completado |
+| US-006 | Proteger Rutas y Middleware | Alta | ✅ Completado |
+| US-007 | Desarrollar Dashboard Residente y Lista de Pases | Alta | ✅ Completado |
+| US-008 | Formulario de Registro (con Tipo de Visita y Vehículo) | Alta | ✅ Completado |
+| US-009 | Generación del Pase Híbrido (QR + PIN) | Alta | ✅ Completado |
+| US-017 | QR/PIN Personal Permanente del Residente | Alta | ✅ Completado |
 
-### Sprint 3: Control de Acceso + Notificaciones
-**Objetivo:** Portería digital completamente funcional.  
-**Entregable:** Vista de guardia, escáner, IA y notificaciones en tiempo real (n8n).
+### Sprint 3: Control de Acceso + Notificaciones + Admin 🔄 EN PROGRESO
+**Objetivo:** Portería digital y panel de administración completamente funcionales.  
+**Entregable:** Vista de guardia, escáner, IA, notificaciones en tiempo real (n8n) y panel admin.
 
 | ID | Historia de Usuario | Prioridad | Estado |
 | :--- | :--- | :--- | :--- |
-| US-010 | Diseñar UI Responsiva para Guardias | Alta | Pendiente |
-| US-011 | Validar Entrada mediante Escáner QR | Alta | Pendiente |
-| US-012 | Validar Entrada manual mediante PIN | Alta | Pendiente |
-| US-013 | Registro de Visitas Imprevistas con IA | Media | Pendiente |
-| US-014 | Configurar Notificación Automática vía n8n | Alta | Pendiente |
+| US-010 | Diseñar UI Responsiva para Guardias | Alta | ⏳ Pendiente |
+| US-011 | Validar Entrada mediante Escáner QR | Alta | ⏳ Pendiente |
+| US-012 | Validar Entrada manual mediante PIN | Alta | ⏳ Pendiente |
+| US-013 | Registro de Visitas Imprevistas con IA | Media | ⏳ Pendiente |
+| US-014 | Configurar Notificación Automática vía n8n | Alta | ⏳ Pendiente |
+| US-018 | Gestión de Usuarios (Admin) | Alta | ✅ Completado |
+| US-019 | Gestión de Propiedades (Admin) | Alta | ✅ Completado |
+| US-020 | Historial de Accesos con Tipo de Visita | Alta | ✅ Completado |
 
 ### Sprint 4: Historial, Pulido + Documentación
 **Objetivo:** Proyecto terminado, auditable y documentado.  

@@ -6,12 +6,12 @@ En la administración y gestión de condominios (edificios y conjuntos residenci
 * **Falta de trazabilidad:** Existe una gran dificultad para registrar y monitorear adecuadamente el ingreso de personal temporal (mantenimiento, proveedores) o servicios de *delivery*, lo que genera vulnerabilidades y brechas de seguridad para los residentes.
 
 ## 1.2 Alcance del Proyecto
-Para mantener el proyecto acotado, realista y viable dentro del tiempo establecido para la materia, el alcance se centrará **exclusivamente en el flujo central de autorización y validación de visitas**. 
+Para mantener el proyecto acotado, realista y viable dentro del tiempo establecido para la materia, el alcance se centrará en **el flujo central de autorización y validación de visitas, y el acceso de residentes con código personal permanente**. 
 
 El sistema permitirá:
-1. **A los residentes:** Pre-autorizar visitas y generar un pase de acceso digital de formato híbrido (Código QR + PIN numérico).
-2. **A los guardias:** Validar el acceso escaneando el QR o introduciendo el PIN de respaldo para registrar el ingreso en tiempo real, sin necesidad de confirmación telefónica.
-3. **A la administración:** Visualizar un historial de ingresos para efectos de auditoría y seguridad.
+1. **A los residentes:** Pre-autorizar visitas generando un pase de acceso digital de formato híbrido (Código QR + PIN numérico), y acceder al condominio con su propio código QR/PIN personal permanente.
+2. **A los guardias:** Validar el acceso de visitantes y residentes escaneando el QR o introduciendo el PIN de respaldo para registrar el ingreso en tiempo real, sin necesidad de confirmación telefónica.
+3. **A la administración:** Visualizar un historial completo de ingresos (visitantes y residentes) para efectos de auditoría y seguridad.
 
 *(Nota: Quedan fuera del alcance integraciones con hardware como talanqueras automáticas, módulos de cobro de alícuotas o reserva de áreas comunes, para enfocar los esfuerzos en la calidad arquitectónica y el flujo principal).*
 

@@ -2,13 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase'
+import { generatePin } from '@/lib/qr'
 import Image from 'next/image'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 export default function LoginPage() {
   const router = useRouter()
@@ -22,32 +18,66 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    try {
+      const supabase = createClient()
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-    if (error) {
-      setError('Credenciales incorrectas')
+      if (authError) {
+        setError('Credenciales incorrectas')
+        setLoading(false)
+        return
+      }
+
+      const { data: usuario, error: dbError } = await supabase
+        .from('usuarios')
+        .select('rol')
+        .eq('id', data.user.id)
+        .single()
+
+      if (dbError || !usuario) {
+        setError('Usuario no encontrado en la base de datos')
+        setLoading(false)
+        return
+      }
+
+      // Si es residente, verificar si tiene QR/PIN personal
+      if (usuario.rol === 'residente') {
+        const { data: residente } = await supabase
+          .from('residentes')
+          .select('codigo_pin_personal, qr_token')
+          .eq('usuario_id', data.user.id)
+          .single()
+
+        // Si no tiene QR/PIN, generarlo
+        if (!residente?.codigo_pin_personal || !residente?.qr_token) {
+          const pin = generatePin()
+          const qrToken = `residente-${data.user.id}-${Date.now()}`
+          
+          await supabase
+            .from('residentes')
+            .update({
+              codigo_pin_personal: pin,
+              qr_token: qrToken,
+            })
+            .eq('usuario_id', data.user.id)
+        }
+
+        window.location.href = '/residente'
+      } else if (usuario.rol === 'vigilante') {
+        window.location.href = '/vigilante'
+      } else if (usuario.rol === 'administrativo' || usuario.rol === 'superadmin') {
+        window.location.href = '/admin'
+      } else {
+        setError('Rol no válido')
+        setLoading(false)
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Error desconocido'
+      setError(message)
       setLoading(false)
-      return
-    }
-
-    // Obtener rol del usuario
-    const { data: usuario } = await supabase
-      .from('usuarios')
-      .select('rol')
-      .eq('id', data.user.id)
-      .single()
-
-    if (usuario?.rol === 'residente') {
-      router.push('/residente')
-    } else if (usuario?.rol === 'vigilante') {
-      router.push('/vigilante')
-    } else if (usuario?.rol === 'administrativo' || usuario?.rol === 'superadmin') {
-      router.push('/admin')
-    } else {
-      router.push('/')
     }
   }
 

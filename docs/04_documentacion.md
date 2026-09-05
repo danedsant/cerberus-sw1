@@ -37,6 +37,7 @@ La aplicación estará disponible en `http://localhost:3000`.
 El proyecto requerirá un archivo `.env.local` en la raíz con las siguientes credenciales para operar correctamente:
 * `NEXT_PUBLIC_SUPABASE_URL`: URL base de la API de Supabase.
 * `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Llave anónima y segura provista por Supabase para peticiones de cliente.
+* `SUPABASE_SERVICE_ROLE_KEY`: Llave de servicio para operaciones administrativas (crear/eliminar usuarios). **Nunca exponer al navegador.**
 * `GEMINI_API_KEY`: Credencial privada para las consultas a la API de Gemini.
 * `N8N_WEBHOOK_URL`: Endpoint expuesto por el servidor n8n para recibir notificaciones (POST) desde nuestra App.
 
