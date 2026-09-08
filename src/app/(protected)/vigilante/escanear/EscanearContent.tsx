@@ -12,6 +12,7 @@ export default function EscanearContent() {
   const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
   const [showCamera, setShowCamera] = useState(false)
+  const [autoStartCamera, setAutoStartCamera] = useState(false)
   const [result, setResult] = useState<{
     success: boolean
     message: string
@@ -28,6 +29,7 @@ export default function EscanearContent() {
   useEffect(() => {
     if (searchParams.get('scan') === 'true') {
       setShowCamera(true)
+      setAutoStartCamera(true)
     }
   }, [searchParams])
 
@@ -162,7 +164,7 @@ export default function EscanearContent() {
       {/* Escáner QR - se muestra directamente si scan=true */}
       {showCamera && (
         <div className="mb-6">
-          <QRScanner onScan={handleQRScan} />
+          <QRScanner onScan={handleQRScan} autoStart={autoStartCamera} />
           <button
             onClick={() => setShowCamera(false)}
             className="w-full h-12 bg-[#2a2a2a] text-white font-medium rounded-xl hover:bg-[#3a3a3a] transition-colors mt-4"
@@ -271,6 +273,7 @@ export default function EscanearContent() {
               setResult(null)
               setCodigo('')
               setShowCamera(true)
+              setAutoStartCamera(true)
             }}
             className="w-full h-12 bg-[#2a2a2a] text-white font-medium rounded-lg hover:bg-[#3a3a3a] transition-colors mt-3"
           >
