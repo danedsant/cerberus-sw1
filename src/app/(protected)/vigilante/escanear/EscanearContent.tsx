@@ -165,7 +165,7 @@ export default function EscanearContent() {
           <QRScanner onScan={handleQRScan} />
           <button
             onClick={() => setShowCamera(false)}
-            className="w-full h-12 bg-[#2a2a2a] text-white font-medium rounded-xl hover:bg-[#3a3a3a] transition-colors"
+            className="w-full h-12 bg-[#2a2a2a] text-white font-medium rounded-xl hover:bg-[#3a3a3a] transition-colors mt-4"
           >
             Cancelar Escaneo
           </button>
