@@ -81,8 +81,8 @@ export default function NuevaVisitaPage() {
 
       if (errorVisita) throw errorVisita
 
-      // 5. Generar QR
-      const qr = await generateQR(visita.id)
+      // 5. Generar QR con el PIN
+      const qr = await generateQR(pin)
 
       // 6. Mostrar pase
       setPaseData({

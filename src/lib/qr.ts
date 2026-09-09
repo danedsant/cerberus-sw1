@@ -8,9 +8,8 @@ export function generatePin(): string {
   return `${letter1}${letter2}-${numbers}`
 }
 
-export async function generateQR(visitaId: string): Promise<string> {
-  const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/#/visita/${visitaId}`
-  const qrDataUrl = await QRCode.toDataURL(url, {
+export async function generateQR(pin: string): Promise<string> {
+  const qrDataUrl = await QRCode.toDataURL(pin, {
     width: 256,
     margin: 2,
     color: {
