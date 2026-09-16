@@ -33,20 +33,60 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  const pathname = request.nextUrl.pathname
+
   const protectedRoutes = ['/residente', '/vigilante', '/admin']
   const isProtectedRoute = protectedRoutes.some(route =>
-    request.nextUrl.pathname.startsWith(route)
+    pathname.startsWith(route)
   )
 
+  // No autenticado en ruta protegida → login
   if (!user && isProtectedRoute) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
   }
 
-  if (user && request.nextUrl.pathname === '/login') {
+  // Obtener rol del usuario
+  const { data: usuario } = await supabase
+    .from('usuarios')
+    .select('rol')
+    .eq('id', user?.id || '')
+    .single()
+
+  const rol = usuario?.rol
+
+  // Validar rol por ruta
+  if (pathname.startsWith('/residente') && rol !== 'residente') {
     const url = request.nextUrl.clone()
-    url.pathname = '/residente'
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
+
+  if (pathname.startsWith('/vigilante') && rol !== 'vigilante') {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
+
+  if (pathname.startsWith('/admin') && !['administrativo', 'superadmin'].includes(rol || '')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
+
+  // Autenticado en /login → redirect a dashboard según rol
+  if (user && pathname === '/login') {
+    const url = request.nextUrl.clone()
+    if (rol === 'residente') {
+      url.pathname = '/residente'
+    } else if (rol === 'vigilante') {
+      url.pathname = '/vigilante'
+    } else if (rol === 'administrativo' || rol === 'superadmin') {
+      url.pathname = '/admin'
+    } else {
+      url.pathname = '/residente'
+    }
     return NextResponse.redirect(url)
   }
 
