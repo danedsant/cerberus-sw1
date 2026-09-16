@@ -262,8 +262,8 @@ A continuación, se detalla el **Product Backlog** estructurado del proyecto:
 | **HU-08** | 2 | Registrar Visita | **Como** Residente,<br>**Quiero** llenar nombre, documento, tipo de visita (ej. Social), fecha y placa,<br>**Para** autorizar a una visita y su motivo. | **Given** formulario "Nueva Visita"<br>**When** completo datos y guardo<br>**Then** visita guardada como 'Pendiente' con su respectiva etiqueta |
 | **HU-09** | 2 | Pase Híbrido | **Como** Residente,<br>**Quiero** generar automáticamente un pase híbrido,<br>**Para** disponer de QR y PIN. | **Given** registro exitoso<br>**When** el sistema procesa<br>**Then** despliega QR válido y PIN alfanumérico |
 | **HU-10** | 3 | UI en Portería | **Como** Guardia,<br>**Quiero** una vista móvil optimizada,<br>**Para** manipular fácilmente estando de pie. | **Given** ingreso desde móvil<br>**When** carga el panel<br>**Then** botones grandes y responsivos |
-| **HU-11** | 3 | Escáner QR | **Como** Guardia,<br>**Quiero** escanear el QR y verificar/añadir placa de vehículo,<br>**Para** validar la entrada con trazabilidad completa. | **Given** escáner activo<br>**When** enfoco QR y confirmo la placa<br>**Then** estado cambia a 'Ingresado' con placa registrada |
-| **HU-12** | 3 | PIN Manual | **Como** Guardia,<br>**Quiero** un buscador de PIN,<br>**Para** validar si el QR falla. | **Given** vista manual<br>**When** tecleo PIN correcto<br>**Then** datos aparecen y estado cambia a 'Ingresado' |
+| **HU-11** | 3 | Escáner QR | **Como** Guardia,<br>**Quiero** escanear el QR y verificar/añadir placa de vehículo,<br>**Para** validar la entrada de visitantes y residentes con trazabilidad completa. | **Given** escáner activo con selector Visitante/Residente<br>**When** enfoco QR y confirmo la placa<br>**Then** se registra ingreso de visitante o residente con trazabilidad |
+| **HU-12** | 3 | PIN Manual | **Como** Guardia,<br>**Quiero** un buscador de PIN,<br>**Para** validar si el QR falla (visitantes y residentes). | **Given** vista manual con selector Visitante/Residente<br>**When** tecleo PIN correcto<br>**Then** datos aparecen y se registra ingreso |
 | **HU-13** | 3 | Resumen IA | **Como** Administrativo,<br>**Quiero** ver un resumen diario de actividad generado por IA,<br>**Para** entender rápido las tendencias de visitas. | **Given** sesión como admin<br>**When** accedo al dashboard<br>**Then** veo resumen con total visitas, horarios pico y apartamentos activos |
 | **HU-14** | 3 | Notificaciones n8n | **Como** Sistema,<br>**Quiero** enviar emails automatizados via n8n,<br>**Para** notificar bienvenida y llegada de visitantes. | **Given** usuario creado o visita ingresada<br>**When** se ejecuta la acción<br>**Then** n8n envía email correspondiente |
 | **HU-15** | 4 | Historial y Auditoría| **Como** Personal Administrativo,<br>**Quiero** tabla de accesos filtrable,<br>**Para** auditar la seguridad. | **Given** rol administrativo<br>**When** navego a Historial<br>**Then** veo tabla ordenada de ingresos |
@@ -299,7 +299,7 @@ A continuación, se detalla el **Product Backlog** estructurado del proyecto:
 | US-009 | Generación del Pase Híbrido (QR + PIN) | Alta | ✅ Completado |
 | US-017 | QR/PIN Personal Permanente del Residente | Alta | ✅ Completado |
 
-### Sprint 3: Control de Acceso + Notificaciones + Admin 🔄 EN PROGRESO
+### Sprint 3: Control de Acceso + Notificaciones + Admin ✅ COMPLETADO
 **Objetivo:** Portería digital y panel de administración completamente funcionales.  
 **Entregable:** Vista de guardia, escáner, resumen IA, notificaciones en tiempo real (n8n) y panel admin.
 
@@ -308,8 +308,8 @@ A continuación, se detalla el **Product Backlog** estructurado del proyecto:
 | US-010 | Diseñar UI Responsiva para Guardias | Alta | ✅ Completado |
 | US-011 | Validar Entrada mediante Escáner QR | Alta | ✅ Completado |
 | US-012 | Validar Entrada manual mediante PIN | Alta | ✅ Completado |
-| US-013 | Resumen Diario de Actividad con IA | Media | ⏳ Pendiente |
-| US-014 | Configurar Notificaciones vía n8n (bienvenida + llegada) | Alta | ⏳ Pendiente |
+| US-013 | Resumen Diario de Actividad con IA | Media | ✅ Completado |
+| US-014 | Configurar Notificaciones vía n8n (bienvenida + llegada) | Alta | ✅ Completado |
 | US-018 | Gestión de Usuarios (Admin) | Alta | ✅ Completado |
 | US-019 | Gestión de Propiedades (Admin) | Alta | ✅ Completado |
 | US-020 | Historial de Accesos con Tipo de Visita | Alta | ✅ Completado |

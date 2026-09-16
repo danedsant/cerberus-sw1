@@ -9,7 +9,7 @@ El proyecto sigue una arquitectura Cliente-Servidor moderna basada en la nube (S
 ## 2.2 Stack Tecnológico
 * **Frontend:** Next.js y Tailwind CSS (Para una interfaz rápida, moderna y adaptable a móviles).
 * **Base de Datos y Autenticación:** PostgreSQL alojado en Supabase con autenticación segura usando JWT.
-* **Inteligencia Artificial:** Gemini API (Para realizar OCR y extracción inteligente de datos de texto desde fotografías de identificaciones en portería).
+* **Inteligencia Artificial:** Gemini API (Para generar resúmenes diarios de actividad en lenguaje natural, mostrando tendencias de visitas, horarios pico y apartamentos más activos).
 * **Automatización:** n8n (Orquestador de flujos de trabajo que escuchará eventos en la base de datos y despachará notificaciones automáticas).
 * **Despliegue (Deploy):** Vercel (Hosting nativo y optimizado para Next.js, con CI/CD automático desde GitHub).
 

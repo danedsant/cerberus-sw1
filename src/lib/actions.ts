@@ -7,20 +7,29 @@ import { revalidatePath } from 'next/cache'
 // ==================== N8N HELPERS ====================
 
 async function enviarN8n(evento: string, datos: Record<string, unknown>) {
-  const webhookUrl = process.env.N8N_WEBHOOK_URL
+  console.log('🌐 enviarN8n llamado con evento:', evento)
+
+  const webhookUrl = evento === 'bienvenida'
+    ? process.env.N8N_WEBHOOK_URL
+    : process.env.N8N_WEBHOOK_URL_LLEGADA
+
+  console.log('🔗 Webhook URL:', webhookUrl)
+
   if (!webhookUrl) {
-    console.warn('N8N_WEBHOOK_URL no configurado, saltando notificación')
+    console.warn(`⚠️ Webhook URL para ${evento} no configurado, saltando notificación`)
     return
   }
 
   try {
-    await fetch(webhookUrl, {
+    console.log('📡 Enviando POST a n8n...')
+    const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ evento, ...datos }),
+      body: JSON.stringify(datos),
     })
+    console.log('📥 Respuesta de n8n:', response.status, response.statusText)
   } catch (error) {
-    console.error('Error al enviar a n8n:', error)
+    console.error('❌ Error al enviar notificación:', error)
   }
 }
 
@@ -208,10 +217,12 @@ export async function eliminarUsuario(id: string) {
 // ==================== NOTIFICACIONES ====================
 
 export async function notificarLlegadaVisita(visitaId: string) {
+  console.log('🔔 notificarLlegadaVisita iniciado para:', visitaId)
+
   const supabase = await createClient()
 
   // Obtener datos de la visita
-  const { data: visita } = await supabase
+  const { data: visita, error } = await supabase
     .from('visitas')
     .select(`
       id,
@@ -225,7 +236,13 @@ export async function notificarLlegadaVisita(visitaId: string) {
     .eq('id', visitaId)
     .single()
 
-  if (!visita) return
+  console.log('📋 Visita obtenida:', visita)
+  console.log('❌ Error query:', error)
+
+  if (!visita) {
+    console.log('⚠️ No se encontró la visita')
+    return
+  }
 
   const visitanteRaw = visita.visitantes as unknown as { nombre: string; apellido: string } | null
   const residenteRaw = visita.residentes as unknown as {
@@ -233,16 +250,28 @@ export async function notificarLlegadaVisita(visitaId: string) {
     propiedades: { numero_unidad: string }
   } | null
 
-  if (!residenteRaw || !visitanteRaw) return
+  console.log('👤 Visitante:', visitanteRaw)
+  console.log('🏠 Residente:', residenteRaw)
 
-  // Enviar notificación vía n8n
-  await enviarN8n('llegada_visita', {
+  if (!residenteRaw || !visitanteRaw) {
+    console.log('⚠️ Faltan datos de residente o visitante')
+    return
+  }
+
+  const datos = {
     email_residente: residenteRaw.usuarios.correo,
     nombre_residente: `${residenteRaw.usuarios.nombre} ${residenteRaw.usuarios.apellido}`,
     propiedad: residenteRaw.propiedades.numero_unidad,
     nombre_visitante: `${visitanteRaw.nombre} ${visitanteRaw.apellido}`,
     tipo_visita: visita.tipo_visita,
-  })
+  }
+
+  console.log('📤 Enviando a n8n:', datos)
+
+  // Enviar notificación vía n8n
+  await enviarN8n('llegada_visita', datos)
+
+  console.log('✅ Notificación enviada')
 }
 
 // ==================== PROPIEDADES ====================

@@ -16,8 +16,8 @@ El ciclo de desarrollo ágil está estructurado en **4 Sprints**, finalizando el
 | **HU-08** | 2 | Registrar Visita | **Como** Residente,<br>**Quiero** llenar nombre, documento, tipo de visita (ej. Social), fecha y placa,<br>**Para** autorizar a una visita y su motivo. | **Given** formulario "Nueva Visita"<br>**When** completo datos y guardo<br>**Then** visita guardada como 'Pendiente' con su respectiva etiqueta |
 | **HU-09** | 2 | Pase Híbrido | **Como** Residente,<br>**Quiero** generar automáticamente un pase híbrido,<br>**Para** disponer de QR y PIN. | **Given** registro exitoso<br>**When** el sistema procesa<br>**Then** despliega QR válido y PIN alfanumérico |
 | **HU-10** | 3 | UI en Portería | **Como** Guardia,<br>**Quiero** una vista móvil optimizada,<br>**Para** manipular fácilmente estando de pie. | **Given** ingreso desde móvil<br>**When** carga el panel<br>**Then** botones grandes y responsivos |
-| **HU-11** | 3 | Escáner QR | **Como** Guardia,<br>**Quiero** escanear el QR y verificar/añadir placa de vehículo,<br>**Para** validar la entrada con trazabilidad completa. | **Given** escáner activo<br>**When** enfoco QR y confirmo la placa<br>**Then** estado cambia a 'Ingresado' con placa registrada |
-| **HU-12** | 3 | PIN Manual | **Como** Guardia,<br>**Quiero** un buscador de PIN,<br>**Para** validar si el QR falla. | **Given** vista manual<br>**When** tecleo PIN correcto<br>**Then** datos aparecen y estado cambia a 'Ingresado' |
+| **HU-11** | 3 | Escáner QR | **Como** Guardia,<br>**Quiero** escanear el QR y verificar/añadir placa de vehículo,<br>**Para** validar la entrada de visitantes y residentes con trazabilidad completa. | **Given** escáner activo con selector Visitante/Residente<br>**When** enfoco QR y confirmo la placa<br>**Then** se registra ingreso de visitante o residente con trazabilidad |
+| **HU-12** | 3 | PIN Manual | **Como** Guardia,<br>**Quiero** un buscador de PIN,<br>**Para** validar si el QR falla (visitantes y residentes). | **Given** vista manual con selector Visitante/Residente<br>**When** tecleo PIN correcto<br>**Then** datos aparecen y se registra ingreso |
 | **HU-13** | 3 | Resumen IA | **Como** Administrativo,<br>**Quiero** ver un resumen diario de actividad generado por IA,<br>**Para** entender rápido las tendencias de visitas. | **Given** sesión como admin<br>**When** accedo al dashboard<br>**Then** veo resumen con total visitas, horarios pico y apartamentos activos |
 | **HU-14** | 3 | Notificaciones n8n | **Como** Sistema,<br>**Quiero** enviar emails automatizados via n8n,<br>**Para** notificar bienvenida y llegada de visitantes. | **Given** usuario creado o visita ingresada<br>**When** se ejecuta la acción<br>**Then** n8n envía email correspondiente |
 | **HU-15** | 4 | Historial y Auditoría| **Como** Personal Administrativo,<br>**Quiero** tabla de accesos filtrable,<br>**Para** auditar la seguridad. | **Given** rol administrativo<br>**When** navego a Historial<br>**Then** veo tabla ordenada de ingresos |
@@ -47,14 +47,14 @@ El ciclo de desarrollo ágil está estructurado en **4 Sprints**, finalizando el
 | HU-09 | Pase Híbrido (QR+PIN) | ✅ |
 | HU-17 | QR/PIN Personal Residente | ✅ |
 
-### Sprint 3: Control de Acceso + Notificaciones + Admin 🔄 EN PROGRESO
+### Sprint 3: Control de Acceso + Notificaciones + Admin ✅ COMPLETADO
 | HU | Título | Estado |
 |:---|:---|:---|
 | HU-10 | UI en Portería | ✅ |
 | HU-11 | Escáner QR | ✅ |
 | HU-12 | PIN Manual | ✅ |
-| HU-13 | Resumen IA | ⏳ Pendiente |
-| HU-14 | Notificaciones n8n | ⏳ Pendiente |
+| HU-13 | Resumen IA | ✅ |
+| HU-14 | Notificaciones n8n | ✅ |
 | HU-18 | Gestión de Usuarios (Admin) | ✅ |
 | HU-19 | Gestión de Propiedades (Admin) | ✅ |
 | HU-20 | Historial de Accesos (Admin) | ✅ |
@@ -69,8 +69,8 @@ El ciclo de desarrollo ágil está estructurado en **4 Sprints**, finalizando el
 ```
 Sprint 1: ████████████████████ 100% ✅
 Sprint 2: ████████████████████ 100% ✅
-Sprint 3: ██████████████░░░░░░  75% 🔄
+Sprint 3: ████████████████████ 100% ✅
 Sprint 4: ░░░░░░░░░░░░░░░░░░░░   0% ⏳
 ```
 
-**Avance total:** 16/20 HU completadas (80%)
+**Avance total:** 18/20 HU completadas (90%)

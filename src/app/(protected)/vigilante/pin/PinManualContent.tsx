@@ -1,19 +1,16 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { notificarLlegadaVisita } from '@/lib/actions'
-import { ArrowLeft, CheckCircle, XCircle, ScanLine, Camera } from 'lucide-react'
+import { ArrowLeft, CheckCircle, XCircle, Keyboard } from 'lucide-react'
 import Link from 'next/link'
-import QRScanner from '@/components/QRScanner'
 
-export default function EscanearContent() {
+export default function PinManualContent() {
   const searchParams = useSearchParams()
   const tipo = searchParams.get('tipo') || 'visitante'
   const [loading, setLoading] = useState(false)
-  const [showCamera, setShowCamera] = useState(false)
-  const [autoStartCamera, setAutoStartCamera] = useState(false)
   const [result, setResult] = useState<{
     success: boolean
     message: string
@@ -25,24 +22,11 @@ export default function EscanearContent() {
       placa_vehiculo?: string
     }
   } | null>(null)
-  const [codigo, setCodigo] = useState('')
+  const [pin, setPin] = useState('')
   const [residenteId, setResidenteId] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (searchParams.get('scan') === 'true') {
-      setShowCamera(true)
-      setAutoStartCamera(true)
-    }
-  }, [searchParams])
-
-  const handleQRScan = (scannedCode: string) => {
-    setCodigo(scannedCode)
-    setShowCamera(false)
-    validateCode(scannedCode)
-  }
-
-  const validateCode = async (codeToValidate: string) => {
-    if (!codeToValidate.trim()) return
+  const handleValidate = async () => {
+    if (!pin.trim()) return
 
     setLoading(true)
     setResult(null)
@@ -52,7 +36,6 @@ export default function EscanearContent() {
       const supabase = createClient()
 
       if (tipo === 'visitante') {
-        // Buscar en visitas
         const { data: visita, error } = await supabase
           .from('visitas')
           .select(`
@@ -68,36 +51,27 @@ export default function EscanearContent() {
               propiedades (numero_unidad)
             )
           `)
-          .eq('codigo_pin', codeToValidate)
+          .eq('codigo_pin', pin)
           .single()
 
         if (error || !visita) {
-          setResult({
-            success: false,
-            message: 'Código no encontrado o inválido',
-          })
+          setResult({ success: false, message: 'PIN no encontrado o inválido' })
           return
         }
 
         if (visita.estado === 'ingresado') {
-          setResult({
-            success: false,
-            message: 'Esta visita ya fue ingresada',
-          })
+          setResult({ success: false, message: 'Esta visita ya fue ingresada' })
           return
         }
 
         if (visita.estado === 'cancelado') {
-          setResult({
-            success: false,
-            message: 'Esta visita fue cancelada',
-          })
+          setResult({ success: false, message: 'Esta visita fue cancelada' })
           return
         }
 
         setResult({
           success: true,
-          message: 'Visita válida',
+          message: 'PIN válido',
           data: {
             nombre: (visita.visitantes as { nombre: string; apellido: string })?.nombre || '',
             apellido: (visita.visitantes as { nombre: string; apellido: string })?.apellido || '',
@@ -107,7 +81,6 @@ export default function EscanearContent() {
           },
         })
       } else {
-        // Buscar residente por qr_token
         const { data: residente, error } = await supabase
           .from('residentes')
           .select(`
@@ -115,14 +88,11 @@ export default function EscanearContent() {
             usuarios (nombre, apellido),
             propiedades (numero_unidad)
           `)
-          .eq('qr_token', codeToValidate)
+          .eq('codigo_pin_personal', pin)
           .single()
 
         if (error || !residente) {
-          setResult({
-            success: false,
-            message: 'Código no encontrado o inválido',
-          })
+          setResult({ success: false, message: 'PIN no encontrado o inválido' })
           return
         }
 
@@ -139,11 +109,8 @@ export default function EscanearContent() {
           },
         })
       }
-    } catch (err) {
-      setResult({
-        success: false,
-        message: 'Error al validar el código',
-      })
+    } catch {
+      setResult({ success: false, message: 'Error al validar el PIN' })
     } finally {
       setLoading(false)
     }
@@ -157,11 +124,10 @@ export default function EscanearContent() {
       const { data: { user } } = await supabase.auth.getUser()
 
       if (tipo === 'visitante') {
-        // Flujo visitante
         const { data: visita } = await supabase
           .from('visitas')
           .select('id')
-          .eq('codigo_pin', codigo)
+          .eq('codigo_pin', pin)
           .single()
 
         if (visita) {
@@ -177,7 +143,6 @@ export default function EscanearContent() {
           await notificarLlegadaVisita(visita.id)
         }
       } else {
-        // Flujo residente
         if (residenteId) {
           await supabase
             .from('ingresos_residentes')
@@ -190,10 +155,10 @@ export default function EscanearContent() {
       }
 
       setResult(null)
-      setCodigo('')
+      setPin('')
       setResidenteId(null)
       alert(tipo === 'visitante' ? 'Ingreso registrado exitosamente' : 'Ingreso de residente registrado')
-    } catch (err) {
+    } catch {
       alert('Error al registrar ingreso')
     } finally {
       setLoading(false)
@@ -202,80 +167,43 @@ export default function EscanearContent() {
 
   return (
     <div className="p-4 min-h-screen bg-[#1F2937]">
-      {/* Header */}
       <div className="flex items-center gap-3 mb-8">
         <Link href="/vigilante" className="p-2 hover:bg-[#2a2a2a] rounded-lg">
           <ArrowLeft className="w-6 h-6 text-white" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">Escanear QR</h1>
+          <h1 className="text-2xl font-bold text-white">PIN Manual</h1>
           <p className="text-gray-400 text-sm">
-            {tipo === 'residente' ? 'Residente — Escanee su código personal' : 'Escanee el código del visitante'}
+            {tipo === 'residente' ? 'Residente — Ingrese su PIN personal' : 'Ingrese el PIN del visitante'}
           </p>
         </div>
       </div>
 
-      {/* Escáner QR */}
-      {showCamera && (
-        <div className="mb-6">
-          <QRScanner onScan={handleQRScan} autoStart={autoStartCamera} />
-          <button
-            onClick={() => setShowCamera(false)}
-            className="w-full h-12 bg-[#2a2a2a] text-white font-medium rounded-xl hover:bg-[#3a3a3a] transition-colors mt-4"
-          >
-            Cancelar Escaneo
-          </button>
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Keyboard className="w-6 h-6 text-[#2563EB]" />
+          <label className="text-white font-medium">
+            {tipo === 'residente' ? 'PIN Personal' : 'PIN de Acceso'}
+          </label>
         </div>
-      )}
+        <input
+          type="text"
+          value={pin}
+          onChange={(e) => setPin(e.target.value.toUpperCase())}
+          className="w-full px-6 py-4 rounded-xl bg-[#2a2a2a] text-white text-2xl font-mono text-center tracking-widest focus:ring-2 focus:ring-[#2563EB] focus:border-transparent outline-none"
+          placeholder={tipo === 'residente' ? 'Ej. X7-456' : 'Ej. A7-992'}
+          maxLength={10}
+        />
+      </div>
 
-      {/* Botón para abrir cámara */}
-      {!showCamera && !result && (
-        <>
-          <button
-            onClick={() => setShowCamera(true)}
-            className="w-full h-20 bg-[#2563EB] text-white font-bold text-lg rounded-xl hover:bg-[#2563EB]/90 transition-colors flex items-center justify-center gap-3 mb-6"
-          >
-            <Camera className="w-8 h-8" />
-            <span>Abrir Cámara para Escanear</span>
-          </button>
+      <button
+        onClick={handleValidate}
+        disabled={loading || !pin.trim()}
+        className="w-full h-16 bg-[#2563EB] text-white font-bold text-lg rounded-xl hover:bg-[#2563EB]/90 transition-colors disabled:opacity-50 mb-6"
+      >
+        {loading ? 'Validando...' : 'Validar PIN'}
+      </button>
 
-          {/* Separador */}
-          <div className="flex items-center gap-4 mb-6">
-            <div className="flex-1 h-px bg-gray-600"></div>
-            <span className="text-gray-400 text-sm">o ingrese manualmente</span>
-            <div className="flex-1 h-px bg-gray-600"></div>
-          </div>
-
-          {/* Input de código */}
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-4">
-              <ScanLine className="w-6 h-6 text-[#2563EB]" />
-              <label className="text-white font-medium">
-                {tipo === 'residente' ? 'Código PIN Personal' : 'Código PIN'}
-              </label>
-            </div>
-            <input
-              type="text"
-              value={codigo}
-              onChange={(e) => setCodigo(e.target.value.toUpperCase())}
-              className="w-full px-6 py-4 rounded-xl bg-[#2a2a2a] text-white text-2xl font-mono text-center tracking-widest focus:ring-2 focus:ring-[#2563EB] focus:border-transparent outline-none"
-              placeholder={tipo === 'residente' ? 'Ej. X7-456' : 'Ej. A7-992'}
-              maxLength={10}
-            />
-          </div>
-
-          {/* Botón validar */}
-          <button
-            onClick={() => validateCode(codigo)}
-            disabled={loading || !codigo.trim()}
-            className="w-full h-16 bg-[#2563EB] text-white font-bold text-lg rounded-xl hover:bg-[#2563EB]/90 transition-colors disabled:opacity-50 mb-6"
-          >
-            {loading ? 'Validando...' : 'Validar Código'}
-          </button>
-        </>
-      )}
-
-      {/* Resultado */}
       {result && (
         <div className={`rounded-xl p-6 ${result.success ? 'bg-[#0bf7ae]/20' : 'bg-[#f26d6d]/20'}`}>
           <div className="flex items-center gap-3 mb-4">
@@ -327,14 +255,12 @@ export default function EscanearContent() {
           <button
             onClick={() => {
               setResult(null)
-              setCodigo('')
+              setPin('')
               setResidenteId(null)
-              setShowCamera(true)
-              setAutoStartCamera(true)
             }}
             className="w-full h-12 bg-[#2a2a2a] text-white font-medium rounded-lg hover:bg-[#3a3a3a] transition-colors mt-3"
           >
-            Escanear otro código
+            Ingresar otro PIN
           </button>
         </div>
       )}
