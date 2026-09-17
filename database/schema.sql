@@ -51,7 +51,7 @@ CREATE TABLE visitas (
     vigilante_id UUID REFERENCES vigilantes(usuario_id) ON DELETE SET NULL,
     fecha_esperada DATE NOT NULL,
     tipo_visita VARCHAR(20) NOT NULL CHECK (tipo_visita IN ('social', 'delivery', 'mantenimiento', 'transporte')),
-    estado VARCHAR(20) NOT NULL DEFAULT 'pendiente' CHECK (estado IN ('pendiente', 'ingresado', 'cancelado')),
+    estado VARCHAR(20) NOT NULL DEFAULT 'pendiente' CHECK (estado IN ('pendiente', 'ingresado', 'cancelado', 'expirado')),
     codigo_pin VARCHAR(10) NOT NULL UNIQUE,
     placa_vehiculo VARCHAR(20),
     fecha_creacion TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

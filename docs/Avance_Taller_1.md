@@ -99,7 +99,7 @@ Desarrollar una aplicación web (PWA) con NEXT.JS y SUPABASE que permita a los r
 ### Requisitos No Funcionales (RNF)
 * **RNF-01 (Accesibilidad):** La solución debe ser una Progressive Web App (PWA) responsiva para operar fluidamente en celulares de gama media y monitores de escritorio.
 * **RNF-02 (Rendimiento):** El tiempo de respuesta para la validación de un pase en la portería no debe exceder los 2 segundos para evitar colas de vehículos.
-* **RNF-03 (Seguridad):** La autorización por rol se gestiona a nivel de aplicación mediante Next.js Middleware, protegiendo las rutas según el perfil del usuario autenticado.
+* **RNF-03 (Seguridad):** La autorización por rol se gestiona a nivel de aplicación mediante Next.js Middleware, que valida el rol del usuario contra la tabla `usuarios` y restringe el acceso a rutas específicas (`/residente`, `/vigilante`, `/admin`) según el perfil autenticado.
 * **RNF-04 (Usabilidad):** La interfaz del guardia debe poseer botones sobredimensionados (mínimo 56px de alto) en la zona inferior de la pantalla para evitar errores táctiles.
 * **RNF-05 (Disponibilidad):** La arquitectura *serverless* debe soportar picos de concurrencia en "horas pico" del condominio (Ej. 6:00 PM a 8:00 PM) sin retrasos.
 
@@ -164,7 +164,7 @@ erDiagram
         uuid vigilante_id FK "Nulo hasta ingreso"
         date fecha_esperada
         string tipo_visita "social, delivery, mantenimiento, transporte"
-        string estado "pendiente, ingresado, cancelado"
+        string estado "pendiente, ingresado, cancelado, expirado"
         string codigo_pin UK
         string placa_vehiculo "Opcional"
         datetime fecha_creacion
@@ -201,7 +201,7 @@ erDiagram
 | Setup del proyecto | Inicialización de BD y repositorios | Alta | GitHub / Vercel |
 | Inicio de sesión | Autenticación de roles con email y password | Alta | Supabase Auth |
 | Cierre de sesión | Destrucción de sesión segura | Alta | Supabase Auth |
-| Protección de rutas | Middleware de protección según rol del usuario | Alta | Next.js Middleware |
+| Protección de rutas | Middleware de protección con validación de rol por ruta | Alta | Next.js Middleware |
 
 ### Módulo 2: Invitaciones y Acceso (Módulo Residente)
 | Funcionalidad | Descripción | Prioridad | Tecnología |
@@ -209,7 +209,7 @@ erDiagram
 | Crear invitación | Formulario con datos del visitante | Alta | Server Action |
 | Generar código híbrido | Generación de imagen QR y PIN único | Alta | Supabase RPC |
 | Listar invitaciones | Ver pases pendientes del residente | Alta | Server Component |
-| Cancelar invitación | Cambiar estado de la visita a "Cancelado" | Media | Server Action |
+| Cancelar invitación | Cambiar estado de la visita a "Cancelado" o "Expirado" (automático) | Media | Server Action |
 | Mi QR / PIN personal | Código de acceso permanente del residente | Alta | qrcode lib |
 
 ### Módulo 3: Control de Acceso (Módulo Guardia)

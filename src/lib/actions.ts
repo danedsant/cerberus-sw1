@@ -33,6 +33,22 @@ async function enviarN8n(evento: string, datos: Record<string, unknown>) {
   }
 }
 
+// ==================== VISITAS EXPIRADAS ====================
+
+export async function marcarVisitasExpiradas() {
+  const supabase = await createClient()
+
+  const { error } = await supabase
+    .from('visitas')
+    .update({ estado: 'expirado' })
+    .eq('estado', 'pendiente')
+    .lt('fecha_esperada', new Date().toISOString().split('T')[0])
+
+  if (error) {
+    console.error('Error al marcar visitas expiradas:', error)
+  }
+}
+
 // ==================== USUARIOS ====================
 
 export async function crearUsuario(formData: {

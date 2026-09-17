@@ -82,7 +82,7 @@ erDiagram
         uuid vigilante_id FK "Nulo hasta ingreso"
         date fecha_esperada
         string tipo_visita "social, delivery, mantenimiento, transporte"
-        string estado "pendiente, ingresado, cancelado"
+        string estado "pendiente, ingresado, cancelado, expirado"
         string codigo_pin UK
         string placa_vehiculo "Opcional"
         datetime fecha_creacion
@@ -106,7 +106,7 @@ erDiagram
 | **Residentes** | `RESIDENTES` | Extensión de Usuarios. Almacena atributos exclusivos como el teléfono de contacto, la propiedad asignada y su código de acceso personal permanente (QR/PIN). | Autoriza las `VISITAS`, registra sus propios ingresos en `INGRESOS_RESIDENTES`. Se asocia a `PROPIEDADES`. |
 | **Vigilantes** | `VIGILANTES` | Extensión de Usuarios. Almacena atributos propios del cargo como el turno laboral. | Valida las `VISITAS` e `INGRESOS_RESIDENTES` en la portería. |
 | **Visitantes** | `VISITANTES` | Almacenar datos personales de personas externas a la residencia. Se separa de la visita para evitar duplicar registros si la persona asiste frecuentemente. No poseen cuenta en el sistema. | Realiza muchas `VISITAS`. |
-| **Visitas / Pases** | `VISITAS` | Tabla transaccional central. Registra el pase temporal: quién lo autoriza (`residente_id`), quién ingresa, tipo de visita, placa del vehículo, y quién lo valida (`vigilante_id`). | Pivote que vincula `RESIDENTES`, `VIGILANTES` y `VISITANTES`. |
+| **Visitas / Pases** | `VISITAS` | Tabla transaccional central. Registra el pase temporal: quién lo autoriza (`residente_id`), quién ingresa, tipo de visita, placa del vehículo, y quién lo valida (`vigilante_id`). El estado `expirado` se marca automáticamente cuando la fecha de la visita ya pasó. | Pivote que vincula `RESIDENTES`, `VIGILANTES` y `VISITANTES`. |
 | **Ingresos Residentes** | `INGRESOS_RESIDENTES` | Registra cada ingreso de un residente al condominio usando su QR/PIN personal. Incluye timestamp y guardia responsable. | Vincula `RESIDENTES` con `VIGILANTES` para trazabilidad. |
 
 ---
@@ -163,7 +163,7 @@ A continuación se detalla la definición, tipo de dato y restricciones clave (P
 | `vigilante_id` | `UUID` | **FK** | Referencia al guardia que validó el acceso (Permite `NULL` al crear). |
 | `fecha_esperada` | `DATE` | - | Fecha agendada en la que el pase tiene validez. |
 | `tipo_visita` | `VARCHAR` | - | Categoría de la visita (`social`, `delivery`, `mantenimiento`, `transporte`). |
-| `estado` | `VARCHAR` | - | Estado actual del pase (`pendiente`, `ingresado`, `cancelado`). |
+| `estado` | `VARCHAR` | - | Estado actual del pase (`pendiente`, `ingresado`, `cancelado`, `expirado`). |
 | `codigo_pin` | `VARCHAR` | **UK** | Código alfanumérico corto generado automáticamente (Ej. A7-992). |
 | `placa_vehiculo` | `VARCHAR` | - | Placa del transporte de llegada (Permite `NULL` si no se conoce). |
 | `fecha_creacion` | `TIMESTAMP`| - | Fecha y hora en que se creó el pase en el sistema. |
