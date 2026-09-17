@@ -349,73 +349,181 @@ export async function obtenerHistorial(filtros?: {
 }) {
   const supabase = await createClient()
 
-  let query = supabase
+  const esResidente = filtros?.tipoVisita === 'residente'
+  const esVisitante = filtros?.tipoVisita && filtros.tipoVisita !== 'residente'
+  const buscarAmbos = !filtros?.tipoVisita
+
+  // Consultar visitas si es visitante o si no hay filtro
+  let historialVisitas: Array<Record<string, unknown>> = []
+  if (esVisitante || buscarAmbos) {
+    let query = supabase
+      .from('visitas')
+      .select(`
+        id,
+        fecha_esperada,
+        fecha_creacion,
+        fecha_hora_ingreso,
+        tipo_visita,
+        estado,
+        codigo_pin,
+        placa_vehiculo,
+        residentes (
+          usuario_id,
+          usuarios (nombre, apellido),
+          propiedades (numero_unidad)
+        ),
+        visitantes (nombre, apellido),
+        vigilantes (
+          usuarios (nombre, apellido)
+        )
+      `)
+      .not('fecha_hora_ingreso', 'is', null)
+      .order('fecha_hora_ingreso', { ascending: false })
+
+    if (filtros?.fechaInicio) {
+      query = query.gte('fecha_hora_ingreso', filtros.fechaInicio)
+    }
+    if (filtros?.fechaFin) {
+      query = query.lte('fecha_hora_ingreso', filtros.fechaFin)
+    }
+    if (esVisitante) {
+      query = query.eq('tipo_visita', filtros!.tipoVisita!)
+    }
+
+    const { data: visitas, error } = await query
+    if (error) throw new Error('Error al obtener historial: ' + error.message)
+
+    historialVisitas = (visitas || []).map((v: Record<string, unknown>) => ({
+      id: v.id,
+      fecha: v.fecha_hora_ingreso || v.fecha_creacion,
+      tipo: 'Visitante',
+      tipoVisita: v.tipo_visita,
+      persona: `${(v.visitantes as Record<string, string>)?.nombre} ${(v.visitantes as Record<string, string>)?.apellido}`,
+      propiedad: `${(v.residentes as Record<string, Record<string, string>>)?.propiedades?.numero_unidad || ''}`,
+      residente: `${(v.residentes as Record<string, Record<string, string>>)?.usuarios?.nombre} ${(v.residentes as Record<string, Record<string, string>>)?.usuarios?.apellido}`,
+      vigilante: `${(v.vigilantes as Record<string, Record<string, string>>)?.usuarios?.nombre || 'N/A'} ${(v.vigilantes as Record<string, Record<string, string>>)?.usuarios?.apellido || ''}`,
+      metodo: v.codigo_pin ? 'PIN' : 'QR',
+      placa: v.placa_vehiculo,
+      estado: v.estado,
+    }))
+  }
+
+  // Consultar ingresos de residentes si es residente o si no hay filtro
+  let historialResidentes: Array<Record<string, unknown>> = []
+  if (esResidente || buscarAmbos) {
+    let ingresosQuery = supabase
+      .from('ingresos_residentes')
+      .select(`
+        id,
+        fecha_hora,
+        residentes (
+          usuario_id,
+          usuarios (nombre, apellido),
+          propiedades (numero_unidad)
+        ),
+        vigilantes (
+          usuarios (nombre, apellido)
+        )
+      `)
+      .order('fecha_hora', { ascending: false })
+
+    if (filtros?.fechaInicio) {
+      ingresosQuery = ingresosQuery.gte('fecha_hora', filtros.fechaInicio)
+    }
+    if (filtros?.fechaFin) {
+      ingresosQuery = ingresosQuery.lte('fecha_hora', filtros.fechaFin)
+    }
+
+    const { data: ingresos, error: ingresosError } = await ingresosQuery
+    if (ingresosError) throw new Error('Error al obtener ingresos: ' + ingresosError.message)
+
+    historialResidentes = (ingresos || []).map((i: Record<string, unknown>) => ({
+      id: i.id,
+      fecha: i.fecha_hora,
+      tipo: 'Residente',
+      tipoVisita: 'residente',
+      persona: `${(i.residentes as Record<string, Record<string, string>>)?.usuarios?.nombre} ${(i.residentes as Record<string, Record<string, string>>)?.usuarios?.apellido}`,
+      propiedad: `${(i.residentes as Record<string, Record<string, string>>)?.propiedades?.numero_unidad || ''}`,
+      residente: '',
+      vigilante: `${(i.vigilantes as Record<string, Record<string, string>>)?.usuarios?.nombre || 'N/A'} ${(i.vigilantes as Record<string, Record<string, string>>)?.usuarios?.apellido || ''}`,
+      metodo: 'QR Personal',
+      placa: null,
+      estado: 'ingresado',
+    }))
+  }
+
+  // Combinar y ordenar
+  const historial = [...historialVisitas, ...historialResidentes].sort((a, b) => {
+    const fechaA = a.fecha ? new Date(a.fecha as string).getTime() : 0
+    const fechaB = b.fecha ? new Date(b.fecha as string).getTime() : 0
+    return fechaB - fechaA
+  })
+
+  return historial
+}
+
+export async function obtenerHistorialVigilante(vigilanteId: string, filtros?: {
+  fechaInicio?: string
+  fechaFin?: string
+}) {
+  const supabase = await createClient()
+
+  // Visitas validadas por este vigilante
+  let queryVisitas = supabase
     .from('visitas')
     .select(`
       id,
-      fecha_esperada,
-      fecha_creacion,
       fecha_hora_ingreso,
+      fecha_creacion,
       tipo_visita,
       estado,
       codigo_pin,
       placa_vehiculo,
       residentes (
-        usuario_id,
         usuarios (nombre, apellido),
         propiedades (numero_unidad)
       ),
-      visitantes (nombre, apellido),
-      vigilantes (
-        usuarios (nombre, apellido)
-      )
+      visitantes (nombre, apellido)
     `)
+    .eq('vigilante_id', vigilanteId)
     .not('fecha_hora_ingreso', 'is', null)
     .order('fecha_hora_ingreso', { ascending: false })
 
   if (filtros?.fechaInicio) {
-    query = query.gte('fecha_hora_ingreso', filtros.fechaInicio)
+    queryVisitas = queryVisitas.gte('fecha_hora_ingreso', filtros.fechaInicio)
   }
   if (filtros?.fechaFin) {
-    query = query.lte('fecha_hora_ingreso', filtros.fechaFin)
-  }
-  if (filtros?.tipoVisita) {
-    query = query.eq('tipo_visita', filtros.tipoVisita)
+    queryVisitas = queryVisitas.lte('fecha_hora_ingreso', filtros.fechaFin)
   }
 
-  const { data: visitas, error } = await query
+  const { data: visitas, error: errorVisitas } = await queryVisitas
+  if (errorVisitas) throw new Error('Error al obtener historial: ' + errorVisitas.message)
 
-  if (error) throw new Error('Error al obtener historial: ' + error.message)
-
-  // Obtener ingresos de residentes
-  let ingresosQuery = supabase
+  // Ingresos de residentes validados por este vigilante
+  let queryIngresos = supabase
     .from('ingresos_residentes')
     .select(`
       id,
       fecha_hora,
       residentes (
-        usuario_id,
         usuarios (nombre, apellido),
         propiedades (numero_unidad)
-      ),
-      vigilantes (
-        usuarios (nombre, apellido)
       )
     `)
+    .eq('vigilante_id', vigilanteId)
     .order('fecha_hora', { ascending: false })
 
   if (filtros?.fechaInicio) {
-    ingresosQuery = ingresosQuery.gte('fecha_hora', filtros.fechaInicio)
+    queryIngresos = queryIngresos.gte('fecha_hora', filtros.fechaInicio)
   }
   if (filtros?.fechaFin) {
-    ingresosQuery = ingresosQuery.lte('fecha_hora', filtros.fechaFin)
+    queryIngresos = queryIngresos.lte('fecha_hora', filtros.fechaFin)
   }
 
-  const { data: ingresos, error: ingresosError } = await ingresosQuery
+  const { data: ingresos, error: errorIngresos } = await queryIngresos
+  if (errorIngresos) throw new Error('Error al obtener ingresos: ' + errorIngresos.message)
 
-  if (ingresosError) throw new Error('Error al obtener ingresos: ' + ingresosError.message)
-
-  // Formatear y combinar resultados
+  // Formatear visitas
   const historialVisitas = (visitas || []).map((v: Record<string, unknown>) => ({
     id: v.id,
     fecha: v.fecha_hora_ingreso || v.fecha_creacion,
@@ -424,12 +532,11 @@ export async function obtenerHistorial(filtros?: {
     persona: `${(v.visitantes as Record<string, string>)?.nombre} ${(v.visitantes as Record<string, string>)?.apellido}`,
     propiedad: `${(v.residentes as Record<string, Record<string, string>>)?.propiedades?.numero_unidad || ''}`,
     residente: `${(v.residentes as Record<string, Record<string, string>>)?.usuarios?.nombre} ${(v.residentes as Record<string, Record<string, string>>)?.usuarios?.apellido}`,
-    vigilante: `${(v.vigilantes as Record<string, Record<string, string>>)?.usuarios?.nombre || 'N/A'} ${(v.vigilantes as Record<string, Record<string, string>>)?.usuarios?.apellido || ''}`,
     metodo: v.codigo_pin ? 'PIN' : 'QR',
     placa: v.placa_vehiculo,
-    estado: v.estado,
   }))
 
+  // Formatear ingresos de residentes
   const historialResidentes = (ingresos || []).map((i: Record<string, unknown>) => ({
     id: i.id,
     fecha: i.fecha_hora,
@@ -438,12 +545,11 @@ export async function obtenerHistorial(filtros?: {
     persona: `${(i.residentes as Record<string, Record<string, string>>)?.usuarios?.nombre} ${(i.residentes as Record<string, Record<string, string>>)?.usuarios?.apellido}`,
     propiedad: `${(i.residentes as Record<string, Record<string, string>>)?.propiedades?.numero_unidad || ''}`,
     residente: '',
-    vigilante: `${(i.vigilantes as Record<string, Record<string, string>>)?.usuarios?.nombre || 'N/A'} ${(i.vigilantes as Record<string, Record<string, string>>)?.usuarios?.apellido || ''}`,
     metodo: 'QR Personal',
     placa: null,
-    estado: 'ingresado',
   }))
 
+  // Combinar y ordenar
   const historial = [...historialVisitas, ...historialResidentes].sort((a, b) => {
     const fechaA = a.fecha ? new Date(a.fecha as string).getTime() : 0
     const fechaB = b.fecha ? new Date(b.fecha as string).getTime() : 0

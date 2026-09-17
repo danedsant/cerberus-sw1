@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { obtenerHistorial } from '@/lib/actions'
-import { Filter, Users, Building, CarTaxiFront, Package, Wrench } from 'lucide-react'
+import { createClient } from '@/lib/supabase'
+import { obtenerHistorialVigilante } from '@/lib/actions'
+import { Filter, Users, Package, Wrench, CarTaxiFront } from 'lucide-react'
 
 interface HistorialItem {
   id: string
@@ -12,10 +13,8 @@ interface HistorialItem {
   persona: string
   propiedad: string
   residente: string
-  vigilante: string
   metodo: string
   placa: string | null
-  estado: string
 }
 
 const tipoVisitaConfig: Record<string, { label: string; icon: typeof Users; color: string }> = {
@@ -26,24 +25,33 @@ const tipoVisitaConfig: Record<string, { label: string; icon: typeof Users; colo
   residente: { label: 'Residente', icon: Users, color: 'text-[#0bf7ae]' },
 }
 
-export default function HistorialPage() {
+export default function HistorialVigilantePage() {
   const [historial, setHistorial] = useState<HistorialItem[]>([])
   const [loading, setLoading] = useState(true)
   const [showFilters, setShowFilters] = useState(false)
+  const [vigilanteId, setVigilanteId] = useState<string | null>(null)
 
   const [filtros, setFiltros] = useState({
     fechaInicio: '',
     fechaFin: '',
-    tipoVisita: '',
   })
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) setVigilanteId(user.id)
+    }
+    fetchUser()
+  }, [])
+
   const fetchHistorial = async () => {
+    if (!vigilanteId) return
     setLoading(true)
     try {
-      const data = await obtenerHistorial({
+      const data = await obtenerHistorialVigilante(vigilanteId, {
         fechaInicio: filtros.fechaInicio || undefined,
         fechaFin: filtros.fechaFin || undefined,
-        tipoVisita: filtros.tipoVisita || undefined,
       })
       setHistorial(data as unknown as HistorialItem[])
     } catch (err) {
@@ -54,15 +62,15 @@ export default function HistorialPage() {
   }
 
   useEffect(() => {
-    fetchHistorial()
-  }, [])
+    if (vigilanteId) fetchHistorial()
+  }, [vigilanteId])
 
   const handleFilter = () => {
     fetchHistorial()
   }
 
   const handleClearFilters = () => {
-    setFiltros({ fechaInicio: '', fechaFin: '', tipoVisita: '' })
+    setFiltros({ fechaInicio: '', fechaFin: '' })
     setTimeout(() => fetchHistorial(), 0)
   }
 
@@ -82,13 +90,13 @@ export default function HistorialPage() {
     <div className="p-4">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#1F2937]">Historial</h1>
-          <p className="text-[#6B7280] text-sm">Registro de accesos al condominio</p>
+          <h1 className="text-2xl font-bold text-[#1F2937]">Mi Historial</h1>
+          <p className="text-[#6B7280] text-sm">Ingresos que he validado</p>
         </div>
         <button
           onClick={() => setShowFilters(!showFilters)}
           className={`p-3 rounded-lg transition-colors ${
-            showFilters ? 'bg-[#0bf7ae] text-[#1F2937]' : 'bg-white text-[#6B7280]'
+            showFilters ? 'bg-[#2563EB] text-white' : 'bg-white text-[#6B7280]'
           }`}
         >
           <Filter className="w-5 h-5" />
@@ -118,26 +126,11 @@ export default function HistorialPage() {
                 className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm"
               />
             </div>
-            <div className="col-span-2">
-              <label className="block text-xs text-[#6B7280] mb-1">Tipo de Visita</label>
-              <select
-                value={filtros.tipoVisita}
-                onChange={(e) => setFiltros({ ...filtros, tipoVisita: e.target.value })}
-                className="w-full px-3 py-2 rounded-lg border border-gray-300 text-sm"
-              >
-                <option value="">Todos</option>
-                <option value="social">Social</option>
-                <option value="delivery">Delivery</option>
-                <option value="mantenimiento">Servicio</option>
-                <option value="transporte">Transporte</option>
-                <option value="residente">Residente</option>
-              </select>
-            </div>
           </div>
           <div className="flex gap-2 mt-3">
             <button
               onClick={handleFilter}
-              className="flex-1 h-10 bg-[#0bf7ae] text-[#1F2937] font-medium rounded-lg text-sm"
+              className="flex-1 h-10 bg-[#2563EB] text-white font-medium rounded-lg text-sm"
             >
               Aplicar
             </button>
@@ -189,10 +182,6 @@ export default function HistorialPage() {
                     <p className="text-[#1F2937]">{formatFecha(item.fecha)}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-[#6B7280]">Vigilante</p>
-                    <p className="text-[#1F2937]">{item.vigilante || 'N/A'}</p>
-                  </div>
-                  <div>
                     <p className="text-xs text-[#6B7280]">Método</p>
                     <p className="text-[#1F2937]">{item.metodo}</p>
                   </div>
@@ -208,7 +197,7 @@ export default function HistorialPage() {
           })
         ) : (
           <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <p className="text-[#6B7280]">No hay registros de accesos</p>
+            <p className="text-[#6B7280]">No hay registros de ingresos</p>
           </div>
         )}
       </div>
