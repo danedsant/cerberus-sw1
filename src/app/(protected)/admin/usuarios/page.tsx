@@ -42,6 +42,9 @@ export default async function UsuariosPage() {
                   </p>
                   <p className="text-sm text-[#6B7280]">{usuario.correo}</p>
                   <p className="text-xs text-[#6B7280]">Cédula: {usuario.cedula}</p>
+                  {usuario.telefono && (
+                    <p className="text-xs text-[#6B7280]">Teléfono: {usuario.telefono}</p>
+                  )}
                   <div className="mt-2 flex items-center gap-2">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium text-white ${
                       usuario.rol === 'residente' ? 'bg-[#0bf7ae]' :

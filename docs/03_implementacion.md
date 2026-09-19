@@ -24,8 +24,9 @@ El ciclo de desarrollo ágil está estructurado en **4 Sprints**, finalizando el
 | **HU-16** | 4 | Control de Calidad | **Como** QA,<br>**Quiero** pruebas unitarias,<br>**Para** asegurar robustez previa entrega final. | **Given** ejecución de suite de pruebas<br>**When** evalúo generación de PIN<br>**Then** pruebas pasan en verde sin errores |
 | **HU-17** | 2 | QR/PIN Personal Residente | **Como** Residente,<br>**Quiero** tener un código QR y PIN personal permanente,<br>**Para** acceder al condominio sin necesidad de pase temporal. | **Given** sesión como residente<br>**When** accedo a "Mi QR"<br>**Then** veo mi código QR personal y PIN alfanumérico permanente |
 | **HU-18** | 3 | Gestión de Usuarios (Admin) | **Como** Administrativo,<br>**Quiero** registrar, editar y eliminar usuarios del sistema,<br>**Para** gestionar residentes, vigilantes y personal. | **Given** sesión como admin<br>**When** navego a Usuarios<br>**Then** puedo crear, editar y eliminar usuarios |
-| **HU-19** | 3 | Gestión de Propiedades (Admin) | **Como** Administrativo,<br>**Quiero** registrar y administrar unidades del condominio,<br>**Para** asignar propiedades a residentes. | **Given** sesión como admin<br>**When** navego a Propiedades<br>**Then** puedo crear, editar y eliminar unidades |
+| **HU-19** | 3 | Gestión de Propiedades (Admin) | **Como** Administrativo,<br>**Quiero** registrar y administrar unidades del condominio,<br>**Para** asignar propiedades a residentes. | **Given** sesión como admin<br>**When** navego a Propiedades<br>**Then** puedo crear, editar y eliminar unidades y veo el nombre del residente en cada card |
 | **HU-20** | 3 | Historial de Accesos (Admin) | **Como** Administrativo,<br>**Quiero** consultar el historial de ingresos con tipo de visita,<br>**Para** auditar la seguridad del condominio. | **Given** sesión como admin<br>**When** navego a Historial<br>**Then** veo tabla filtrable de accesos (visitantes y residentes) con opciones: Social, Delivery, Servicio, Transporte, Residente |
+| **HU-21** | 2 | Historial Personal del Vigilante | **Como** Vigilante,<br>**Quiero** consultar mi propio historial de ingresos validados,<br>**Para** auditar mi actividad en portería. | **Given** sesión como vigilante<br>**When** navego a Historial<br>**Then** veo solo los ingresos que yo he validado con filtros por fecha |
 
 ## 3.2 Estado de los Sprints
 
@@ -58,6 +59,7 @@ El ciclo de desarrollo ágil está estructurado en **4 Sprints**, finalizando el
 | HU-18 | Gestión de Usuarios (Admin) | ✅ |
 | HU-19 | Gestión de Propiedades (Admin) | ✅ |
 | HU-20 | Historial de Accesos (Admin) | ✅ |
+| HU-21 | Historial Personal del Vigilante | ✅ |
 
 ### Sprint 4: Historial, Pulido + Documentación ⏳ NO INICIADO
 | HU | Título | Estado |
@@ -73,4 +75,4 @@ Sprint 3: ████████████████████ 100% ✅
 Sprint 4: ░░░░░░░░░░░░░░░░░░░░   0% ⏳
 ```
 
-**Avance total:** 18/20 HU completadas (90%)
+**Avance total:** 19/21 HU completadas (90%)

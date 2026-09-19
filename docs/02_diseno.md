@@ -53,12 +53,12 @@ erDiagram
         string apellido
         string cedula UK
         string rol "superadmin, administrativo, vigilante, residente"
+        string telefono
     }
 
     RESIDENTES {
         uuid usuario_id PK_FK
         uuid propiedad_id FK
-        string telefono_contacto
         string codigo_pin_personal UK "PIN permanente Ej. X7-456"
         string qr_token UK "Token único para QR personal"
     }
@@ -130,13 +130,13 @@ A continuación se detalla la definición, tipo de dato y restricciones clave (P
 | `apellido` | `VARCHAR` | - | Apellido del usuario. |
 | `cedula` | `VARCHAR` | **UK** | Documento de identidad del usuario. |
 | `rol` | `VARCHAR` | - | Columna discriminadora para definir el tipo de usuario (`superadmin`, `administrativo`, `vigilante`, `residente`). |
+| `telefono` | `VARCHAR` | - | Número de teléfono del usuario (disponible para todos los roles). |
 
 ### 3. RESIDENTES (residents)
 | Atributo | Tipo de Dato | Clave | Definición |
 | :--- | :--- | :--- | :--- |
 | `usuario_id` | `UUID` | **PK, FK** | Referencia a la tabla `USUARIOS` (Relación 1:1). |
 | `propiedad_id` | `UUID` | **FK** | Identificador de la propiedad donde reside. |
-| `telefono_contacto` | `VARCHAR` | - | Número celular principal del residente para avisos. |
 | `codigo_pin_personal` | `VARCHAR` | **UK** | Código alfanumérico permanente para acceso del residente (Ej. `X7-456`). Se genera una sola vez al crear la cuenta. |
 | `qr_token` | `VARCHAR` | **UK** | Token único y permanente que codifica la información del residente para su código QR personal. |
 

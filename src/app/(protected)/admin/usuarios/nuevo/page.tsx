@@ -20,7 +20,7 @@ export default function NuevoUsuarioPage() {
     password: '',
     rol: 'residente',
     propiedad_id: '',
-    telefono_contacto: '',
+    telefono: '',
     turno: 'Diurno',
   })
 
@@ -51,7 +51,7 @@ export default function NuevoUsuarioPage() {
         cedula: form.cedula,
         rol: form.rol,
         propiedad_id: form.propiedad_id || undefined,
-        telefono_contacto: form.telefono_contacto || undefined,
+        telefono: form.telefono || undefined,
         turno: form.turno,
       })
       router.push('/admin/usuarios')
@@ -135,6 +135,17 @@ export default function NuevoUsuarioPage() {
         </div>
 
         <div>
+          <label className="block text-sm font-medium text-[#1F2937] mb-1">Teléfono</label>
+          <input
+            type="tel"
+            value={form.telefono}
+            onChange={(e) => setForm({ ...form, telefono: e.target.value })}
+            className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0bf7ae] focus:border-transparent outline-none"
+            placeholder="0412-1234567"
+          />
+        </div>
+
+        <div>
           <label className="block text-sm font-medium text-[#1F2937] mb-1">Rol</label>
           <select
             value={form.rol}
@@ -164,17 +175,6 @@ export default function NuevoUsuarioPage() {
                   </option>
                 ))}
               </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-[#1F2937] mb-1">Teléfono</label>
-              <input
-                type="tel"
-                value={form.telefono_contacto}
-                onChange={(e) => setForm({ ...form, telefono_contacto: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#0bf7ae] focus:border-transparent outline-none"
-                placeholder="0412-1234567"
-              />
             </div>
           </>
         )}

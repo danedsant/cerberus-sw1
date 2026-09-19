@@ -8,7 +8,7 @@ import { Plus, Edit, Trash2, X, Check } from 'lucide-react'
 interface Propiedad {
   id: string
   numero_unidad: string
-  residentes?: { usuario_id: string }[]
+  residentes?: { usuario_id: string; usuarios: { nombre: string; apellido: string } | null }[]
 }
 
 export default function PropiedadesPage() {
@@ -25,7 +25,10 @@ export default function PropiedadesPage() {
       .from('propiedades')
       .select(`
         *,
-        residentes (usuario_id)
+        residentes (
+          usuario_id,
+          usuarios (nombre, apellido)
+        )
       `)
       .order('numero_unidad')
     setPropiedades(data || [])
@@ -162,7 +165,10 @@ export default function PropiedadesPage() {
                   <p className="font-bold text-[#1F2937]">{propiedad.numero_unidad}</p>
                   <p className="text-sm text-[#6B7280]">
                     {propiedad.residentes && propiedad.residentes.length > 0
-                      ? 'Ocupado'
+                      ? `Ocupado • ${propiedad.residentes
+                          .filter((r) => r.usuarios)
+                          .map((r) => `${r.usuarios!.nombre} ${r.usuarios!.apellido}`)
+                          .join(', ')}`
                       : 'Disponible'}
                   </p>
                 </div>

@@ -17,14 +17,14 @@ CREATE TABLE usuarios (
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL,
     cedula VARCHAR(20) NOT NULL UNIQUE,
-    rol VARCHAR(20) NOT NULL CHECK (rol IN ('superadmin', 'administrativo', 'vigilante', 'residente'))
+    rol VARCHAR(20) NOT NULL CHECK (rol IN ('superadmin', 'administrativo', 'vigilante', 'residente')),
+    telefono VARCHAR(20)
 );
 
 -- 3. Tabla de Residentes (extensión de Usuarios)
 CREATE TABLE residentes (
     usuario_id UUID PRIMARY KEY REFERENCES usuarios(id) ON DELETE CASCADE,
     propiedad_id UUID NOT NULL REFERENCES propiedades(id) ON DELETE RESTRICT,
-    telefono_contacto VARCHAR(20),
     codigo_pin_personal VARCHAR(10) UNIQUE,
     qr_token VARCHAR(255) UNIQUE
 );

@@ -59,7 +59,7 @@ export default async function AdminDashboard() {
             </div>
             <div>
               <p className="text-2xl font-bold text-[#1F2937]">{visitasCount || 0}</p>
-              <p className="text-xs text-[#6B7280]">Visitas Pendientes</p>
+              <p className="text-xs text-[#6B7280]">Visitas Pendientes de Hoy</p>
             </div>
           </div>
         </div>

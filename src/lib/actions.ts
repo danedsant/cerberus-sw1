@@ -59,7 +59,7 @@ export async function crearUsuario(formData: {
   cedula: string
   rol: string
   propiedad_id?: string
-  telefono_contacto?: string
+  telefono?: string
   turno?: string
 }) {
   const supabase = await createClient()
@@ -84,6 +84,7 @@ export async function crearUsuario(formData: {
       apellido: formData.apellido,
       cedula: formData.cedula,
       rol: formData.rol,
+      telefono: formData.telefono || null,
     })
 
   if (usuarioError) throw new Error('Error al crear usuario: ' + usuarioError.message)
@@ -95,7 +96,6 @@ export async function crearUsuario(formData: {
       .insert({
         usuario_id: authUser.user?.id,
         propiedad_id: formData.propiedad_id,
-        telefono_contacto: formData.telefono_contacto,
       })
 
     if (residenteError) throw new Error('Error al crear residente: ' + residenteError.message)
@@ -133,7 +133,7 @@ export async function actualizarUsuario(formData: {
   email: string
   rol: string
   propiedad_id?: string
-  telefono_contacto?: string
+  telefono?: string
   turno?: string
 }) {
   const supabase = await createClient()
@@ -146,6 +146,7 @@ export async function actualizarUsuario(formData: {
       apellido: formData.apellido,
       cedula: formData.cedula,
       correo: formData.email,
+      telefono: formData.telefono || null,
     })
     .eq('id', formData.id)
 
@@ -164,7 +165,6 @@ export async function actualizarUsuario(formData: {
         .from('residentes')
         .update({
           propiedad_id: formData.propiedad_id,
-          telefono_contacto: formData.telefono_contacto,
         })
         .eq('usuario_id', formData.id)
 
@@ -175,7 +175,6 @@ export async function actualizarUsuario(formData: {
         .insert({
           usuario_id: formData.id,
           propiedad_id: formData.propiedad_id,
-          telefono_contacto: formData.telefono_contacto,
         })
 
       if (residenteError) throw new Error('Error al crear residente: ' + residenteError.message)
