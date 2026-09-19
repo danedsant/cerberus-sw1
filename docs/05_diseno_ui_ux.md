@@ -67,7 +67,7 @@ Se define el uso exclusivo de los siguientes componentes gráficos para mantener
 | **Navegación General** | `<Home />`, `<LogOut />`, `<User />` | Dashboard principal, botón de salida, ajustes de perfil. |
 | **Acceso Residente** | `<IdCard />` | Código QR/PIN personal permanente del residente. |
 | **Creación de Pases** | `<UserPlus />`, `<QrCode />`, `<CarFront />` | Nuevo invitado, visualización del pase QR, campo de placa de vehículo. |
-| **Acción en Portería** | `<ScanLine />`, `<Keyboard />`, `<Camera />` | Activar lector QR, búsqueda manual por PIN, IA para extraer cédula. |
+| **Acción en Portería** | `<ScanLine />`, `<Keyboard />`, `<Camera />` | Activar lector QR, búsqueda manual por PIN, validación visual de datos y confirmación de ingreso. La placa se muestra como información asociada cuando existe. |
 | **Estado de Seguridad**| `<ShieldCheck />`, `<ShieldAlert />` | Pantalla del guardia: Acceso Concedido (Éxito) o Acceso Denegado (Peligro). |
 | **Auditoría (Admin)** | `<History />`, `<Filter />`, `<Bell />` | Tabla del historial de visitas, filtrado por fechas, notificaciones n8n. |
 | **Visita: Social** | `<Users />` | Etiqueta para visitas familiares o amigos. |

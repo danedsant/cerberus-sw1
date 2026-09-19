@@ -102,25 +102,25 @@ export default function VigilanteDashboard() {
   }, [])
 
   return (
-    <div className="p-4 min-h-screen bg-[#1F2937]">
+    <div className="p-4">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Portería</h1>
-        <p className="text-gray-400">
+        <h1 className="text-2xl font-bold text-[#1F2937]">Portería</h1>
+        <p className="text-[#6B7280]">
           Bienvenido, {usuario?.nombre} {usuario?.apellido}
         </p>
       </div>
 
       {/* Selector de tipo de ingreso */}
       <div className="mb-6">
-        <p className="text-sm text-gray-400 mb-2">Tipo de ingreso</p>
+        <p className="text-sm text-[#6B7280] mb-2">Tipo de ingreso</p>
         <div className="flex gap-2">
           <button
             onClick={() => setTipoIngreso('visitante')}
             className={`flex-1 flex items-center justify-center gap-2 h-12 rounded-xl font-medium transition-colors ${
               tipoIngreso === 'visitante'
                 ? 'bg-[#2563EB] text-white'
-                : 'bg-[#2a2a2a] text-gray-400'
+                : 'bg-white text-[#6B7280]'
             }`}
           >
             <Users className="w-5 h-5" />
@@ -131,7 +131,7 @@ export default function VigilanteDashboard() {
             className={`flex-1 flex items-center justify-center gap-2 h-12 rounded-xl font-medium transition-colors ${
               tipoIngreso === 'residente'
                 ? 'bg-[#0bf7ae] text-[#1F2937]'
-                : 'bg-[#2a2a2a] text-gray-400'
+                : 'bg-white text-[#6B7280]'
             }`}
           >
             <User className="w-5 h-5" />
@@ -145,49 +145,55 @@ export default function VigilanteDashboard() {
         <div className="flex items-center gap-3">
           <Clock className="w-6 h-6 text-[#2563EB]" />
           <div>
-            <p className="text-2xl font-bold text-white">{visitasPendientes}</p>
-            <p className="text-sm text-gray-400">Visitas pendientes hoy</p>
+            <p className="text-2xl font-bold text-[#1F2937]">{visitasPendientes}</p>
+            <p className="text-sm text-[#6B7280]">Visitas pendientes hoy</p>
           </div>
         </div>
       </div>
 
       {/* Botones principales */}
-      <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
         <Link
           href={`/vigilante/escanear?scan=true&tipo=${tipoIngreso}`}
-          className="flex items-center justify-center gap-4 w-full h-24 bg-[#2563EB] text-white rounded-xl font-bold text-lg hover:bg-[#2563EB]/90 transition-colors"
+          className="flex flex-col items-center justify-center gap-3 w-full h-36 bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-2xl font-bold shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
         >
-          <ScanLine className="w-8 h-8" />
-          <span>Escanear QR</span>
+          <ScanLine className="w-10 h-10" />
+          <div className="text-center">
+            <span className="block text-lg">Escanear</span>
+            <span className="block text-xs font-normal text-blue-100 mt-1">Cámara QR</span>
+          </div>
         </Link>
 
         <Link
           href={`/vigilante/pin?tipo=${tipoIngreso}`}
-          className="flex items-center justify-center gap-4 w-full h-24 bg-white text-[#1F2937] rounded-xl font-bold text-lg hover:bg-gray-100 transition-colors"
+          className="flex flex-col items-center justify-center gap-3 w-full h-36 bg-gradient-to-br from-blue-500 to-blue-700 text-white rounded-2xl font-bold shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
         >
-          <Keyboard className="w-8 h-8" />
-          <span>Ingresar PIN</span>
+          <Keyboard className="w-10 h-10" />
+          <div className="text-center">
+            <span className="block text-lg">Ingresar</span>
+            <span className="block text-xs font-normal text-blue-100 mt-1">PIN Manual</span>
+          </div>
         </Link>
       </div>
 
       {/* Últimos ingresos */}
       <div className="mt-8">
-        <h2 className="text-lg font-bold text-white mb-4">Últimos ingresos</h2>
+        <h2 className="text-lg font-bold text-[#1F2937] mb-4">Últimos ingresos</h2>
         {ultimosIngresos.length === 0 ? (
-          <div className="bg-[#2a2a2a] rounded-lg p-4 text-center">
-            <p className="text-gray-400">No hay ingresos recientes</p>
+          <div className="bg-white rounded-lg p-4 text-center">
+            <p className="text-[#6B7280]">No hay ingresos recientes</p>
           </div>
         ) : (
           <div className="space-y-2">
             {ultimosIngresos.map((ingreso) => (
-              <div key={ingreso.id} className="bg-[#2a2a2a] rounded-lg p-3 flex items-center justify-between">
+              <div key={ingreso.id} className="bg-white rounded-lg p-3 flex items-center justify-between">
                 <div>
-                  <p className="text-white font-medium">
+                  <p className="text-[#1F2937] font-medium">
                     {ingreso.visitante_nombre} {ingreso.visitante_apellido}
                   </p>
-                  <p className="text-sm text-gray-400">{ingreso.tipo_visita}</p>
+                  <p className="text-sm text-[#6B7280]">{ingreso.tipo_visita}</p>
                 </div>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-[#6B7280]">
                   {ingreso.fecha_hora_ingreso
                     ? new Date(ingreso.fecha_hora_ingreso).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' })
                     : '—'}

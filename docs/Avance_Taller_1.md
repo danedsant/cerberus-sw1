@@ -44,7 +44,7 @@ Se propone el desarrollo de una aplicación web moderna (PWA) que permita a los 
 * **Registro digital** de residentes y guardias con autenticación segura.
 * **Generación de códigos híbridos** temporales para visitantes.
 * **Validación rápida en portería** (Escáner de cámara o tecleo manual de PIN).
-* **Lectura Inteligente (IA)** para extracción de datos de cédulas en visitas imprevistas.
+* **Verificación de datos asociados al ingreso** (nombre, tipo, propiedad y placa cuando existe) antes de confirmar el acceso.
 * **Historial completo** de accesos y notificaciones automatizadas.
 
 ---
@@ -57,7 +57,12 @@ Se propone el desarrollo de una aplicación web moderna (PWA) que permita a los 
 | UI Library | React | 19+ | Componentes de interfaz |
 | Language | TypeScript | 5+ | Tipado estático |
 | Estilos | Tailwind CSS | 3+ | Framework CSS utility-first |
+| Iconografía | Lucide React | 1.41+ | Íconos para navegación y estados de la interfaz |
 | Backend & DB | Supabase (PostgreSQL)| 15+ | Auth + Database + API (BaaS) |
+| Supabase Client | `@supabase/supabase-js` | 2.115+ | Cliente del backend para autenticación y consultas |
+| Supabase SSR | `@supabase/ssr` | 0.12+ | Manejo seguro de sesiones y middleware en Next.js |
+| QR & Generation | `qrcode` | 1.5+ | Generación de QR para residentes y visitantes |
+| QR Scanner | `html5-qrcode` | 2.3+ | Escaneo de código QR con cámara |
 | Automatización| n8n | - | Webhooks para notificaciones |
 | IA | Gemini API | - | OCR para lectura de documentos |
 | Deploy | Vercel | - | Hosting y despliegue continuo |
@@ -76,7 +81,7 @@ Desarrollar una aplicación web (PWA) con NEXT.JS y SUPABASE que permita a los r
 | :---: | :--- | :--- |
 | **1** | Implementar sistema de autenticación seguro para usuarios. | Supabase Auth |
 | **2** | Desarrollar módulo de creación y gestión de pases híbridos (QR/PIN). | Server Actions / Supabase RPC |
-| **3** | Implementar sistema de validación rápida y lectura biométrica/OCR en portería. | Supabase Query / Gemini API |
+| **3** | Implementar sistema de validación rápida en portería mediante QR/PIN, mostrando los datos asociados y confirmando el ingreso. | Supabase Query / html5-qrcode |
 | **4** | Crear historial consultable de accesos y alertas automatizadas al residente. | Server Components / n8n |
 | **5** | Generar código de acceso personal permanente (QR/PIN) para residentes. | qrcode lib / Supabase |
 
@@ -89,7 +94,7 @@ Desarrollar una aplicación web (PWA) con NEXT.JS y SUPABASE que permita a los r
 * **RF-02 (Gestión de Pases):** El residente debe poder generar un pase temporal, indicando los datos del visitante, fecha esperada, tipo de visita y vehículo.
 * **RF-02b (Acceso Residente):** El residente debe disponer de un código QR y PIN personal permanente para acceder al condominio sin necesidad de generar un pase temporal.
 * **RF-03 (Pase Híbrido):** El sistema debe generar automáticamente un Código QR y un PIN alfanumérico por cada pase creado.
-* **RF-04 (Validación de Ingreso):** El guardia debe poder validar un pase escaneando el Código QR con la cámara o tecleando el PIN.
+* **RF-04 (Validación de Ingreso):** El guardia debe poder validar un pase escaneando el Código QR con la cámara o tecleando el PIN, revisar los datos asociados y confirmar el ingreso del visitante o residente.
 * **RF-05 (Analítica con IA):** El sistema debe generar un resumen diario de actividad en lenguaje natural (vía Gemini API) mostrando total de visitas, horarios pico y apartamentos más activos.
 * **RF-06 (Trazabilidad):** El sistema debe registrar la fecha, hora exacta y guardia responsable al confirmar un ingreso.
 * **RF-07a (Notificación de llegada):** El sistema debe emitir una alerta automatizada (vía n8n) al residente cuando su invitado llegue.
@@ -215,10 +220,10 @@ erDiagram
 ### Módulo 3: Control de Acceso (Módulo Guardia)
 | Funcionalidad | Descripción | Prioridad | Tecnología |
 | :--- | :--- | :--- | :--- |
-| Escanear código QR | Leer código de acceso mediante la cámara | Alta | html5-qrcode |
-| Validar código PIN | Buscador manual en caso de falla del QR | Alta | Supabase Query |
-| Resumen diario con IA | Generar resumen de actividad del día en lenguaje natural | Media | Gemini API |
-| Registrar entrada | Marcar fecha y hora exacta de llegada | Alta | Server Action |
+| **Escanear código QR** | Leer código de acceso mediante la cámara y mostrar los datos asociados | Alta | html5-qrcode |
+| **Validar código PIN** | Buscador manual en caso de falla del QR, mostrando la información del visitante o residente | Alta | Supabase Query |
+| **Confirmar ingreso** | Revisar los datos y registrar fecha y hora exacta del acceso | Alta | Server Action |
+| **Resumen diario con IA** | Generar resumen de actividad del día en lenguaje natural | Media | Gemini API |
 
 ### Módulo 4: Historial y Notificaciones
 | Funcionalidad | Descripción | Prioridad | Tecnología |

@@ -166,14 +166,14 @@ export default function PinManualContent() {
   }
 
   return (
-    <div className="p-4 min-h-screen bg-[#1F2937]">
+    <div className="p-4">
       <div className="flex items-center gap-3 mb-8">
-        <Link href="/vigilante" className="p-2 hover:bg-[#2a2a2a] rounded-lg">
-          <ArrowLeft className="w-6 h-6 text-white" />
+        <Link href="/vigilante" className="p-2 hover:bg-white rounded-lg">
+          <ArrowLeft className="w-6 h-6 text-[#1F2937]" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-white">PIN Manual</h1>
-          <p className="text-gray-400 text-sm">
+          <h1 className="text-2xl font-bold text-[#1F2937]">PIN Manual</h1>
+          <p className="text-[#6B7280] text-sm">
             {tipo === 'residente' ? 'Residente — Ingrese su PIN personal' : 'Ingrese el PIN del visitante'}
           </p>
         </div>
@@ -182,7 +182,7 @@ export default function PinManualContent() {
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-4">
           <Keyboard className="w-6 h-6 text-[#2563EB]" />
-          <label className="text-white font-medium">
+          <label className="text-[#1F2937] font-medium">
             {tipo === 'residente' ? 'PIN Personal' : 'PIN de Acceso'}
           </label>
         </div>
@@ -190,7 +190,7 @@ export default function PinManualContent() {
           type="text"
           value={pin}
           onChange={(e) => setPin(e.target.value.toUpperCase())}
-          className="w-full px-6 py-4 rounded-xl bg-[#2a2a2a] text-white text-2xl font-mono text-center tracking-widest focus:ring-2 focus:ring-[#2563EB] focus:border-transparent outline-none"
+          className="w-full px-6 py-4 rounded-xl bg-white text-[#1F2937] text-2xl font-mono text-center tracking-widest focus:ring-2 focus:ring-[#2563EB] focus:border-transparent outline-none"
           placeholder={tipo === 'residente' ? 'Ej. X7-456' : 'Ej. A7-992'}
           maxLength={10}
         />
@@ -199,7 +199,7 @@ export default function PinManualContent() {
       <button
         onClick={handleValidate}
         disabled={loading || !pin.trim()}
-        className="w-full h-16 bg-[#2563EB] text-white font-bold text-lg rounded-xl hover:bg-[#2563EB]/90 transition-colors disabled:opacity-50 mb-6"
+        className="w-full h-16 bg-gradient-to-br from-blue-500 to-blue-700 text-white font-bold text-lg rounded-2xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:hover:translate-y-0 mb-6"
       >
         {loading ? 'Validando...' : 'Validar PIN'}
       </button>
@@ -219,33 +219,33 @@ export default function PinManualContent() {
 
           {result.success && result.data && (
             <div className="space-y-3 mb-6">
-              <div className="bg-[#2a2a2a] rounded-lg p-3">
-                <p className="text-gray-400 text-sm">{tipo === 'residente' ? 'Residente' : 'Visitante'}</p>
-                <p className="text-white font-bold text-lg">
+              <div className="bg-white rounded-lg p-3">
+                <p className="text-[#6B7280] text-sm">{tipo === 'residente' ? 'Residente' : 'Visitante'}</p>
+                <p className="text-[#1F2937] font-bold text-lg">
                   {result.data.nombre} {result.data.apellido}
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-[#2a2a2a] rounded-lg p-3">
-                  <p className="text-gray-400 text-sm">Tipo</p>
-                  <p className="text-white font-medium">{result.data.tipo_visita}</p>
+                <div className="bg-white rounded-lg p-3">
+                  <p className="text-[#6B7280] text-sm">Tipo</p>
+                  <p className="text-[#1F2937] font-medium">{result.data.tipo_visita}</p>
                 </div>
-                <div className="bg-[#2a2a2a] rounded-lg p-3">
-                  <p className="text-gray-400 text-sm">Propiedad</p>
-                  <p className="text-white font-medium">{result.data.propiedad}</p>
+                <div className="bg-white rounded-lg p-3">
+                  <p className="text-[#6B7280] text-sm">Propiedad</p>
+                  <p className="text-[#1F2937] font-medium">{result.data.propiedad}</p>
                 </div>
               </div>
               {result.data.placa_vehiculo && (
-                <div className="bg-[#2a2a2a] rounded-lg p-3">
-                  <p className="text-gray-400 text-sm">Placa</p>
-                  <p className="text-white font-mono font-bold">{result.data.placa_vehiculo}</p>
+                <div className="bg-white rounded-lg p-3">
+                  <p className="text-[#6B7280] text-sm">Placa</p>
+                  <p className="text-[#1F2937] font-mono font-bold">{result.data.placa_vehiculo}</p>
                 </div>
               )}
 
               <button
                 onClick={handleConfirmEntry}
                 disabled={loading}
-                className="w-full h-14 bg-[#0bf7ae] text-[#1F2937] font-bold rounded-lg hover:bg-[#0bf7ae]/90 transition-colors"
+                className="w-full h-14 bg-gradient-to-br from-[#0bf7ae] to-[#09d698] text-[#1F2937] font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-1 transition-all duration-200 disabled:opacity-50 disabled:hover:translate-y-0"
               >
                 {loading ? 'Registrando...' : 'Confirmar Ingreso'}
               </button>
@@ -258,7 +258,7 @@ export default function PinManualContent() {
               setPin('')
               setResidenteId(null)
             }}
-            className="w-full h-12 bg-[#2a2a2a] text-white font-medium rounded-lg hover:bg-[#3a3a3a] transition-colors mt-3"
+            className="w-full h-12 bg-white text-[#1F2937] font-medium rounded-lg hover:bg-gray-50 transition-colors mt-3"
           >
             Ingresar otro PIN
           </button>
