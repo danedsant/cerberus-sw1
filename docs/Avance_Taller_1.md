@@ -58,6 +58,7 @@ Se propone el desarrollo de una aplicación web moderna (PWA) que permita a los 
 | Language | TypeScript | 5+ | Tipado estático |
 | Estilos | Tailwind CSS | 3+ | Framework CSS utility-first |
 | Iconografía | Lucide React | 1.41+ | Íconos para navegación y estados de la interfaz |
+| Animación | Framer Motion | - | Transiciones visuales y estados intermedios en la experiencia de autenticación |
 | Backend & DB | Supabase (PostgreSQL)| 15+ | Auth + Database + API (BaaS) |
 | Supabase Client | `@supabase/supabase-js` | 2.115+ | Cliente del backend para autenticación y consultas |
 | Supabase SSR | `@supabase/ssr` | 0.12+ | Manejo seguro de sesiones y middleware en Next.js |

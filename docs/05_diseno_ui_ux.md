@@ -50,6 +50,9 @@ Estos colores son universales y se utilizan estrictamente para comunicar el esta
 | **Admin** | Inicio \| Usuarios \| Propiedades \| Historial \| Salir |
 | **Vigilante** | Inicio \| Escanear \| Historial \| Salir |
 
+### Transición Post-Login
+Tras una autenticación exitosa, la interfaz presenta una transición visual breve con el logo de la aplicación antes de ingresar al dashboard correspondiente. Esta pantalla actúa como un estado intermedio que refuerza la identidad visual de la marca y hace más natural la navegación entre sistemas.
+
 ### Estilo de Componentes
 * **Bordes:** Ligeramente redondeados (`rounded-lg`) para suavizar la interfaz tecnológica.
 * **Sombras:** Uso de elevaciones sutiles (`shadow-md`) en tarjetas de visitas para que destaquen sobre el fondo gris claro.

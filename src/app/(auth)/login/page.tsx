@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { generatePin } from '@/lib/qr'
 import Image from 'next/image'
+import AppLoader from '@/components/AppLoader'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -43,6 +44,8 @@ export default function LoginPage() {
         return
       }
 
+      let redirectPath = '/'
+
       // Si es residente, verificar si tiene QR/PIN personal
       if (usuario.rol === 'residente') {
         const { data: residente } = await supabase
@@ -55,7 +58,7 @@ export default function LoginPage() {
         if (!residente?.codigo_pin_personal || !residente?.qr_token) {
           const pin = generatePin()
           const qrToken = `residente-${data.user.id}-${Date.now()}`
-          
+
           await supabase
             .from('residentes')
             .update({
@@ -65,15 +68,20 @@ export default function LoginPage() {
             .eq('usuario_id', data.user.id)
         }
 
-        window.location.href = '/residente'
+        redirectPath = '/residente'
       } else if (usuario.rol === 'vigilante') {
-        window.location.href = '/vigilante'
+        redirectPath = '/vigilante'
       } else if (usuario.rol === 'administrativo' || usuario.rol === 'superadmin') {
-        window.location.href = '/admin'
+        redirectPath = '/admin'
       } else {
         setError('Rol no válido')
         setLoading(false)
+        return
       }
+
+      setTimeout(() => {
+        window.location.href = redirectPath
+      }, 700)
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Error desconocido'
       setError(message)
@@ -82,7 +90,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto p-6">
+    <>
+      <AppLoader visible={loading} />
+      <div className="w-full max-w-md mx-auto p-6">
       <div className="bg-white rounded-lg shadow-md p-8">
         {/* Header */}
         <div className="flex flex-col items-center mb-8">
@@ -145,5 +155,6 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
+    </>
   )
 }
