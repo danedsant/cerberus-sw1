@@ -69,13 +69,15 @@ export default function HistorialPage() {
   const formatFecha = (fecha: string) => {
     if (!fecha) return '—'
     const date = new Date(fecha)
-    return date.toLocaleString('es-VE', {
+    return new Intl.DateTimeFormat('es-VE', {
+      timeZone: 'America/Caracas',
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    })
+      hour12: false,
+    }).format(date)
   }
 
   return (

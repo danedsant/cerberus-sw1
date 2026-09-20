@@ -195,7 +195,12 @@ export default function VigilanteDashboard() {
                 </div>
                 <p className="text-sm text-[#6B7280]">
                   {ingreso.fecha_hora_ingreso
-                    ? new Date(ingreso.fecha_hora_ingreso).toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' })
+                    ? new Intl.DateTimeFormat('es-VE', {
+                        timeZone: 'America/Caracas',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: false,
+                      }).format(new Date(ingreso.fecha_hora_ingreso))
                     : '—'}
                 </p>
               </div>

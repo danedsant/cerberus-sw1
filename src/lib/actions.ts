@@ -35,14 +35,30 @@ async function enviarN8n(evento: string, datos: Record<string, unknown>) {
 
 // ==================== VISITAS EXPIRADAS ====================
 
+function getCaracasDateString(date = new Date()) {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Caracas',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+
+  const parts = formatter.formatToParts(date)
+  const map = Object.fromEntries(parts.filter((part) => part.type !== 'literal').map((part) => [part.type, part.value]))
+
+  return `${map.year}-${map.month}-${map.day}`
+}
+
 export async function marcarVisitasExpiradas() {
   const supabase = await createClient()
+
+  const hoyCaracas = getCaracasDateString()
 
   const { error } = await supabase
     .from('visitas')
     .update({ estado: 'expirado' })
     .eq('estado', 'pendiente')
-    .lt('fecha_esperada', new Date().toISOString().split('T')[0])
+    .lt('fecha_esperada', hoyCaracas)
 
   if (error) {
     console.error('Error al marcar visitas expiradas:', error)

@@ -4,6 +4,20 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { Sparkles, RefreshCw } from 'lucide-react'
 
+const getCaracasDateString = (date = new Date()) => {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Caracas',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+
+  const parts = formatter.formatToParts(date)
+  const map = Object.fromEntries(parts.filter((part) => part.type !== 'literal').map((part) => [part.type, part.value]))
+
+  return `${map.year}-${map.month}-${map.day}`
+}
+
 export default function ResumenDelDia() {
   const [resumen, setResumen] = useState('')
   const [loading, setLoading] = useState(false)
@@ -17,8 +31,8 @@ export default function ResumenDelDia() {
     try {
       const supabase = createClient()
 
-      // Obtener visitas de hoy
-      const hoy = new Date().toISOString().split('T')[0]
+      // Obtener visitas de hoy en horario de Caracas
+      const hoy = getCaracasDateString()
       const { data: visitas, error: errVisitas } = await supabase
         .from('visitas')
         .select(`
@@ -120,7 +134,8 @@ Visitas por tipo: ${JSON.stringify(datosResumen.porTipo)}
 Apartamentos más activos: ${JSON.stringify(datosResumen.porPropiedad)}
 Hora pico: ${datosResumen.horaPico}
 
-Genera un resumen de 3-4 líneas en lenguaje natural, destacando los puntos más importantes en bullet points. ajusta el formato adecuadamente sabiendo que es texto plano la salida, ajusta el formato adecuadamente antes de presentarlo. Sé conciso y profesional. y has un comentario final de cierre. puedes usar emojis para resaltar los puntos importantes.`
+Incluiras de cabecera la fecha del dia como: 📅 Resumen del [DIA] [MES] [AÑO] en formato largo 
+En lenguaje natural, destacando los puntos más importantes en bullet points "•", ajusta el formato adecuadamente sabiendo que la salida es texto plano y no MD, ajusta el formato adecuadamente antes de presentarlo. Sé conciso y profesional y haz un comentario final de cierre. puedes usar emojis para resaltar los puntos importantes.`
               }]
             }],
             generationConfig: {
@@ -152,7 +167,7 @@ Genera un resumen de 3-4 líneas en lenguaje natural, destacando los puntos más
       setError(`Error: ${errMsg}`)
       // Generar resumen local como fallback
       const supabase = createClient()
-      const hoy = new Date().toISOString().split('T')[0]
+      const hoy = getCaracasDateString()
       const { data: visitas } = await supabase
         .from('visitas')
         .select('id, estado, tipo_visita')
