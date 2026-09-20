@@ -24,6 +24,7 @@ export default function PinManualContent() {
   } | null>(null)
   const [pin, setPin] = useState('')
   const [residenteId, setResidenteId] = useState<string | null>(null)
+  const [modal, setModal] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
   const handleValidate = async () => {
     if (!pin.trim()) return
@@ -157,9 +158,12 @@ export default function PinManualContent() {
       setResult(null)
       setPin('')
       setResidenteId(null)
-      alert(tipo === 'visitante' ? 'Ingreso registrado exitosamente' : 'Ingreso de residente registrado')
+      setModal({
+        type: 'success',
+        message: tipo === 'visitante' ? 'Ingreso registrado exitosamente' : 'Ingreso de residente registrado',
+      })
     } catch {
-      alert('Error al registrar ingreso')
+      setModal({ type: 'error', message: 'Error al registrar ingreso' })
     } finally {
       setLoading(false)
     }
@@ -262,6 +266,33 @@ export default function PinManualContent() {
           >
             Ingresar otro PIN
           </button>
+        </div>
+      )}
+
+      {modal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="entry-modal-title"
+        >
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl">
+            {modal.type === 'success' ? (
+              <CheckCircle className="mx-auto mb-4 h-14 w-14 text-[#0aaf7d]" />
+            ) : (
+              <XCircle className="mx-auto mb-4 h-14 w-14 text-[#f26d6d]" />
+            )}
+            <h2 id="entry-modal-title" className="text-xl font-bold text-[#1F2937]">
+              {modal.type === 'success' ? 'Ingreso confirmado' : 'No se pudo registrar'}
+            </h2>
+            <p className="mt-2 text-[#6B7280]">{modal.message}</p>
+            <button
+              onClick={() => setModal(null)}
+              className="mt-6 h-12 w-full rounded-xl bg-[#2563EB] font-bold text-white transition-colors hover:bg-[#1d4ed8]"
+            >
+              Aceptar
+            </button>
+          </div>
         </div>
       )}
     </div>

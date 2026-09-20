@@ -134,8 +134,8 @@ Visitas por tipo: ${JSON.stringify(datosResumen.porTipo)}
 Apartamentos más activos: ${JSON.stringify(datosResumen.porPropiedad)}
 Hora pico: ${datosResumen.horaPico}
 
-Incluiras de cabecera la fecha del dia como: 📅 Resumen del [DIA] [MES] [AÑO] en formato largo 
-En lenguaje natural, destacando los puntos más importantes en bullet points "•", ajusta el formato adecuadamente sabiendo que la salida es texto plano y no MD, ajusta el formato adecuadamente antes de presentarlo. Sé conciso y profesional y haz un comentario final de cierre. puedes usar emojis para resaltar los puntos importantes.`
+Incluiras de cabecera la fecha del dia como: 📅 Resumen del [DIA] [MES] [AÑO] en formato 
+En lenguaje natural, destacando los puntos más importantes en bullet points "•", ajusta el formato adecuadamente sabiendo que la salida es texto plano y no MD, ajusta el formato adecuadamente antes de presentarlo. Sé conciso y profesional y haz un comentario final de cierre.`
               }]
             }],
             generationConfig: {
