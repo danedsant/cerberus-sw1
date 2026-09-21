@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { actualizarUsuario, eliminarUsuario } from '@/lib/actions'
-import { ArrowLeft, Trash2 } from 'lucide-react'
+import { ArrowLeft, Trash2, CheckCircle, XCircle, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 
@@ -15,6 +15,10 @@ export default function EditarUsuarioPage() {
   const [error, setError] = useState('')
   const [propiedades, setPropiedades] = useState<{ id: string; numero_unidad: string }[]>([])
   const [usuario, setUsuario] = useState<Record<string, unknown> | null>(null)
+  const [modal, setModal] = useState<{
+    type: 'confirm' | 'success' | 'error'
+    message: string
+  } | null>(null)
 
   const [form, setForm] = useState({
     nombre: '',
@@ -91,15 +95,13 @@ export default function EditarUsuarioPage() {
   }
 
   const handleDelete = async () => {
-    if (!confirm('¿Estás seguro de eliminar este usuario?')) return
-
     setLoading(true)
     try {
       await eliminarUsuario(id)
-      router.push('/admin/usuarios')
+      setModal({ type: 'success', message: 'El usuario fue eliminado correctamente.' })
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Error desconocido'
-      setError(message)
+      setModal({ type: 'error', message })
     } finally {
       setLoading(false)
     }
@@ -126,7 +128,7 @@ export default function EditarUsuarioPage() {
           </div>
         </div>
         <button
-          onClick={handleDelete}
+          onClick={() => setModal({ type: 'confirm', message: '¿Estás seguro de eliminar este usuario?' })}
           disabled={loading}
           className="p-2 text-[#f26d6d] hover:bg-[#f26d6d]/10 rounded-lg transition-colors"
         >
@@ -251,6 +253,54 @@ export default function EditarUsuarioPage() {
           {loading ? 'Guardando...' : 'Guardar Cambios'}
         </button>
       </form>
+
+      {modal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="user-modal-title"
+        >
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl">
+            {modal.type === 'confirm' ? (
+              <AlertTriangle className="mx-auto mb-4 h-14 w-14 text-[#f8c367]" />
+            ) : modal.type === 'success' ? (
+              <CheckCircle className="mx-auto mb-4 h-14 w-14 text-[#0aaf7d]" />
+            ) : (
+              <XCircle className="mx-auto mb-4 h-14 w-14 text-[#f26d6d]" />
+            )}
+            <h2 id="user-modal-title" className="text-xl font-bold text-[#1F2937]">
+              {modal.type === 'confirm' ? 'Eliminar usuario' : modal.type === 'success' ? 'Operación completada' : 'No se pudo eliminar'}
+            </h2>
+            <p className="mt-2 text-[#6B7280]">{modal.message}</p>
+            <div className="mt-6 flex gap-3">
+              {modal.type === 'confirm' && (
+                <button
+                  onClick={() => {
+                    setModal(null)
+                    void handleDelete()
+                  }}
+                  className="h-12 flex-1 rounded-xl bg-[#f26d6d] font-bold text-white transition-colors hover:bg-[#dc5555]"
+                >
+                  Eliminar
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  if (modal.type === 'success') {
+                    router.push('/admin/usuarios')
+                    return
+                  }
+                  setModal(null)
+                }}
+                className={`${modal.type === 'confirm' ? 'flex-1 bg-gray-100 text-[#6B7280] hover:bg-gray-200' : 'w-full bg-[#2563EB] text-white hover:bg-[#1d4ed8]'} h-12 rounded-xl font-bold transition-colors`}
+              >
+                {modal.type === 'confirm' ? 'Cancelar' : 'Aceptar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

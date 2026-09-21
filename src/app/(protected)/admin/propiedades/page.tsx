@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 import { crearPropiedad, actualizarPropiedad, eliminarPropiedad } from '@/lib/actions'
-import { Plus, Edit, Trash2, X, Check } from 'lucide-react'
+import { Plus, Edit, Trash2, X, Check, CheckCircle, XCircle, AlertTriangle } from 'lucide-react'
 
 interface Propiedad {
   id: string
@@ -18,6 +18,11 @@ export default function PropiedadesPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [formValue, setFormValue] = useState('')
   const [error, setError] = useState('')
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+  const [modal, setModal] = useState<{
+    type: 'confirm' | 'success' | 'error'
+    message: string
+  } | null>(null)
 
   const fetchPropiedades = async () => {
     const supabase = createClient()
@@ -69,17 +74,17 @@ export default function PropiedadesPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de eliminar esta propiedad?')) return
-
     setLoading(true)
     try {
       await eliminarPropiedad(id)
       await fetchPropiedades()
+      setModal({ type: 'success', message: 'La propiedad fue eliminada correctamente.' })
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Error desconocido'
-      alert(message)
+      setModal({ type: 'error', message })
     } finally {
       setLoading(false)
+      setPendingDeleteId(null)
     }
   }
 
@@ -180,7 +185,10 @@ export default function PropiedadesPage() {
                     <Edit className="w-5 h-5" />
                   </button>
                   <button
-                    onClick={() => handleDelete(propiedad.id)}
+                    onClick={() => {
+                      setPendingDeleteId(propiedad.id)
+                      setModal({ type: 'confirm', message: `¿Estás seguro de eliminar ${propiedad.numero_unidad}?` })
+                    }}
                     className="p-2 text-[#6B7280] hover:text-[#f26d6d] transition-colors"
                   >
                     <Trash2 className="w-5 h-5" />
@@ -195,6 +203,51 @@ export default function PropiedadesPage() {
           </div>
         )}
       </div>
+
+      {modal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="property-modal-title"
+        >
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl">
+            {modal.type === 'confirm' ? (
+              <AlertTriangle className="mx-auto mb-4 h-14 w-14 text-[#f8c367]" />
+            ) : modal.type === 'success' ? (
+              <CheckCircle className="mx-auto mb-4 h-14 w-14 text-[#0aaf7d]" />
+            ) : (
+              <XCircle className="mx-auto mb-4 h-14 w-14 text-[#f26d6d]" />
+            )}
+            <h2 id="property-modal-title" className="text-xl font-bold text-[#1F2937]">
+              {modal.type === 'confirm' ? 'Eliminar propiedad' : modal.type === 'success' ? 'Operación completada' : 'No se pudo eliminar'}
+            </h2>
+            <p className="mt-2 text-[#6B7280]">{modal.message}</p>
+            <div className="mt-6 flex gap-3">
+              {modal.type === 'confirm' && (
+                <button
+                  onClick={() => {
+                    setModal(null)
+                    if (pendingDeleteId) void handleDelete(pendingDeleteId)
+                  }}
+                  className="h-12 flex-1 rounded-xl bg-[#f26d6d] font-bold text-white transition-colors hover:bg-[#dc5555]"
+                >
+                  Eliminar
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  setModal(null)
+                  setPendingDeleteId(null)
+                }}
+                className={`${modal.type === 'confirm' ? 'flex-1 bg-gray-100 text-[#6B7280] hover:bg-gray-200' : 'w-full bg-[#2563EB] text-white hover:bg-[#1d4ed8]'} h-12 rounded-xl font-bold transition-colors`}
+              >
+                {modal.type === 'confirm' ? 'Cancelar' : 'Aceptar'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
