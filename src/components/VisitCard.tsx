@@ -23,6 +23,7 @@ const estadoConfig = {
   pendiente: { label: 'Pendiente', color: 'bg-[#f8c367]' },
   ingresado: { label: 'Ingresado', color: 'bg-[#0bf7ae]' },
   cancelado: { label: 'Cancelado', color: 'bg-[#f26d6d]' },
+  expirado: { label: 'Expirado', color: 'bg-[#6B7280]' },
 }
 
 export default function VisitCard({
