@@ -31,7 +31,7 @@
 
 - 🔐 **Autenticación Basada en Roles:** Acceso restringido y rutas protegidas vía Middleware (Residente, Vigilante, Administrativo).
 - 🎫 **Pases Híbridos (QR + PIN):** Generación automática de QR visual y PIN de respaldo alfanumérico para cada visitante.
-- 📱 **Panel Mobil-First para Portería:** Escaneo con cámara activa (`html5-qrcode`) e ingreso manual por PIN optimizado para operabilidad móvil.
+- 📱 **Panel Mobile-First para Portería:** Escaneo con cámara activa (`html5-qrcode`) e ingreso manual por PIN optimizado para operabilidad móvil.
 - 🔑 **Acceso Permanente para Residentes:** Código QR y PIN personal para el ingreso rápido de propietarios e inquilinos.
 - 🤖 **Resumen Diario con Inteligencia Artificial:** Síntesis automatizada en lenguaje natural de la actividad diaria mediante **Google Gemini API** (con fallback local resiliente).
 - 📧 **Notificaciones Automatizadas:** Integración de webhooks con **n8n** para correos de bienvenida y alerta inmediata de llegada al residente.
@@ -92,6 +92,31 @@
 
 ---
 
+## 🧪 Base de Datos y Usuarios de Prueba (Seed SQL)
+
+Para poblar la base de datos con datos de prueba realistas para evaluación o desarrollo local, ejecuta los siguientes scripts en el **SQL Editor de Supabase** en este orden:
+
+1. **[`database/schema.sql`](file:///c:/Users/Danedsant/Documents/danedsant/Cerberus/cerberus-app/database/schema.sql)**: Crea las tablas, relaciones e índices.
+2. **[`database/seed.sql`](file:///c:/Users/Danedsant/Documents/danedsant/Cerberus/cerberus-app/database/seed.sql)**: Siembra usuarios en Supabase Auth, perfiles, propiedades y visitas.
+
+### 🔑 Credenciales de Acceso de Prueba
+
+Todos los usuarios de prueba tienen la contraseña predeterminada: **`123456`**
+
+| Rol | Correo Electrónico | Contraseña | Nombre |
+| :--- | :--- | :--- | :--- |
+| **Administrativo** | `admin@cerberus.com` | `123456` | Carlos Mendoza |
+| **Vigilante** | `vigilante@cerberus.com` | `123456` | Ramón Pérez |
+| **Residente 1** | `residente@cerberus.com` | `123456` | María Delgado |
+| **Residente 2** | `residente2@cerberus.com` | `123456` | Alejandro Gómez |
+
+### 📦 Datos Iniciales Sembrados
+- **Propiedades:** `A-101`, `B-202`, `C-303`, `D-404`.
+- **Visitantes:** Juan Rodríguez, Ana Silva, Roberto Blanco.
+- **Visitas Activas:** Pases de prueba en estados `pendiente`, `ingresado` y `expirado` para evaluar todos los paneles e IA de inmediato.
+
+---
+
 ## 🚀 Instalación y Configuración
 
 ### 1. Requisitos Previos
@@ -127,15 +152,20 @@ npm run build    # Compilar aplicación para producción
 npm run start    # Ejecutar compilación de producción
 npm run lint     # Análisis estático de código con ESLint
 ```
+### 5. Documentación Técnica Detallada
 
+Para consultar la arquitectura del sistema, casos de uso, historias de usuario e informe final completo, revisa los siguientes archivos de documentación:
+
+- 📄 **[Informe Final Consolidado (Markdown)](docs/Informe_final.md)**
+- 📕 **[Informe Final Consolidado (PDF)](<docs/Informe Final - Cerberus - Software 1.pdf>)**
 ---
 
 ## 📁 Estructura del Proyecto
 
 ```text
 cerberus-app/
-├── database/                # Scripts de migraciones y esquema SQL de Supabase
-├── docs/                    # Documentación técnica, diseño y manuales de calidad
+├── database/                # Scripts SQL (schema.sql y seed.sql para Supabase)
+├── docs/                    # Documentación técnica e Informe Final consolidado
 ├── public/                  # Archivos estáticos
 └── src/
     ├── app/                 # Rutas de Next.js App Router
@@ -145,12 +175,12 @@ cerberus-app/
     │       ├── residente/   # Dashboard residente, crear visitas, mi QR
     │       └── vigilante/   # Escáner QR, validación PIN e historial
     ├── components/          # Componentes reutilizables e interfaz de usuario
-    ├── img/                 # Recursos gráficos (Logo oficial)
+    ├── img/                 # Recursos gráficos (Logo oficial Logo.png)
     └── lib/                 # Utilidades, clientes de Supabase, Gemini y n8n
 ```
 
 ---
 
 <p align="center">
-  <sub>Desarrollado con ❤️ para la gestión segura y ágil en condominios residenciales.</sub>
+  <sub>Desarrollado con ❤️ por Daniel V. Santamaria.</sub>
 </p>
