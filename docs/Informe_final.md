@@ -665,7 +665,9 @@ La aplicación envía los datos mediante una solicitud POST en formato JSON a la
 
 ## 11. Link del Repositorio
 
-**GitHub:** [Pendiente de colocar enlace definitivo]
+**GitHub:** https://github.com/danedsant/cerberus-sw1
+**Despligue:** https://cerberus-sw1.vercel.app/
+**Evidencias del Plan de Pruebas:** https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link
 
 ### Tecnologías principales
 
@@ -680,48 +682,6 @@ La aplicación envía los datos mediante una solicitud POST en formato JSON a la
 
 ---
 
-## 12. Capturas de las Pantallas de la Aplicación
-
-> **[CAPTURA 1]** Pantalla de Login  
-> *[Insertar captura de la pantalla de login]*
-
-> **[CAPTURA 2]** Dashboard de Residente  
-> *[Insertar captura del dashboard de residente]*
-
-> **[CAPTURA 3]** Formulario Nueva Visita  
-> *[Insertar captura del formulario de nueva visita]*
-
-> **[CAPTURA 4]** Pase QR/PIN  
-> *[Insertar captura del pase generado]*
-
-> **[CAPTURA 5]** Mi QR Personal  
-> *[Insertar captura de la pantalla de QR personal]*
-
-> **[CAPTURA 6]** Dashboard de Vigilante  
-> *[Insertar captura del dashboard de vigilante]*
-
-> **[CAPTURA 7]** Escáner QR  
-> *[Insertar captura del escáner de cámara]*
-
-> **[CAPTURA 8]** Validación PIN  
-> *[Insertar captura de la validación manual]*
-
-> **[CAPTURA 9]** Dashboard Administrativo  
-> *[Insertar captura del panel de administración]*
-
-> **[CAPTURA 10]** Gestión de Usuarios  
-> *[Insertar captura de la gestión de usuarios]*
-
-> **[CAPTURA 11]** Gestión de Propiedades  
-> *[Insertar captura de la gestión de propiedades]*
-
-> **[CAPTURA 12]** Historial de Accesos  
-> *[Insertar captura del historial filtrable]*
-
-> **[CAPTURA 13]** Resumen IA  
-> *[Insertar captura del resumen generado por Gemini]*
-
----
 
 **Documento generado:** Septiembre 2026  
 **Estado:** Informe final consolidado.  
