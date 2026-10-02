@@ -172,9 +172,8 @@ Las historias de usuario se organizaron mediante Scrum y se redactaron utilizand
 | **Sprint 1** | Configuración, base de datos y despliegue | Completado |
 | **Sprint 2** | Autenticación y funcionalidades del residente | Completado |
 | **Sprint 3** | Control de acceso, notificaciones y administración | Completado |
-| **Sprint 4** | Control de calidad y pruebas funcionales manuales | Pendiente |
+| **Sprint 4** | Control de calidad y pruebas funcionales manuales | Completado |
 
-**Avance total:** 20/21 HU completadas (95%).
 
 ---
 
@@ -196,30 +195,30 @@ La validación se realizará manualmente y se enfocará en el comportamiento fun
 
 | ID | Módulo | Caso de prueba | Resultado esperado | Resultado obtenido | Estado | Evidencia |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| PF-01 | Login | Credenciales válidas de residente | Dashboard de residente | Pendiente | Pendiente | Pendiente |
-| PF-02 | Login | Credenciales válidas de vigilante | Panel de portería | Pendiente | Pendiente | Pendiente |
-| PF-03 | Login | Credenciales válidas de administrador | Panel administrativo | Pendiente | Pendiente | Pendiente |
-| PF-04 | Login | Credenciales incorrectas | Mensaje de error y acceso rechazado | Pendiente | Pendiente | Pendiente |
-| PF-05 | Login | Autenticación válida | Transición visual con el logo | Pendiente | Pendiente | Pendiente |
-| PF-06 | Rutas | Acceder sin sesión a una ruta protegida | Redirección al login | Pendiente | Pendiente | Pendiente |
-| PF-07 | Residente | Crear visita con datos válidos | Visita registrada como pendiente | Pendiente | Pendiente | Pendiente |
-| PF-08 | Residente | Generar pase | QR y PIN asociados visibles | Pendiente | Pendiente | Pendiente |
-| PF-09 | Residente | Consultar QR personal | QR y PIN permanente visibles | Pendiente | Pendiente | Pendiente |
-| PF-10 | Vigilante | Escanear QR de visitante | Datos de la visita visibles | Pendiente | Pendiente | Pendiente |
-| PF-11 | Vigilante | Validar PIN de visitante | Datos visibles e ingreso registrado | Pendiente | Pendiente | Pendiente |
-| PF-12 | Vigilante | Validar QR de residente | Ingreso del residente registrado | Pendiente | Pendiente | Pendiente |
-| PF-13 | Vigilante | Validar PIN inválido | Mensaje de código no encontrado | Pendiente | Pendiente | Pendiente |
-| PF-14 | Notificaciones | Confirmar ingreso de visitante | Flujo de notificación ejecutado | Pendiente | Pendiente | Pendiente |
-| PF-15 | Historial admin | Consultar historial global | Accesos registrados visibles | Pendiente | Pendiente | Pendiente |
-| PF-16 | Historial admin | Filtrar por fecha y tipo | Solo registros coincidentes | Pendiente | Pendiente | Pendiente |
-| PF-17 | Historial vigilante | Consultar historial personal | Solo ingresos del vigilante | Pendiente | Pendiente | Pendiente |
-| PF-18 | Usuarios | Crear usuario | Usuario registrado con su rol | Pendiente | Pendiente | Pendiente |
-| PF-19 | Usuarios | Editar usuario | Cambios reflejados | Pendiente | Pendiente | Pendiente |
-| PF-20 | Usuarios | Eliminar usuario | Usuario ausente del listado | Pendiente | Pendiente | Pendiente |
-| PF-21 | Propiedades | Crear propiedad | Unidad visible en el listado | Pendiente | Pendiente | Pendiente |
-| PF-22 | Propiedades | Editar o eliminar propiedad | Cambio reflejado | Pendiente | Pendiente | Pendiente |
-| PF-23 | IA | Generar resumen diario | Resumen Gemini o fallback local visible | Pendiente | Pendiente | Pendiente |
-| PF-24 | Expiración | Consultar visita con fecha pasada | Estado expirado visible | Pendiente | Pendiente | Pendiente |
+| PF-01 | Login | Credenciales válidas de residente | Dados credenciales de residente válidos, al iniciar sesión se debe dirigir al dashboard de residente | Tras ingresar las credenciales de residente se contempla acceso correcto al dashboard de residente | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-02 | Login | Credenciales válidas de vigilante | Dados credenciales de vigilante válidos, al iniciar sesión se debe dirigir al dashboard de vigilante | Tras ingresar las credenciales de vigilante se contempla acceso correcto al dashboard de vigilante | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-03 | Login | Credenciales válidas de administrador | Dados credenciales de administrador válidos, al iniciar sesión se debe dirigir al dashboard administrativo | Tras ingresar las credenciales de administrador se contempla acceso correcto al dashboard administrativo | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-04 | Login | Credenciales incorrectas | Dados credenciales inválidas, al iniciar sesión se debe mostrar un error impidiendo el acceso | Tras ingresar credenciales inválidas se contempla mensaje de error y no permite acceso al sistema | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-05 | Login | Autenticación válida | Dados credenciales válidas, al ingresar se debe mostrar animación de carga con el Isotipo | Tras ingresar credenciales válidas se contempla la animación de carga con el Isotipo del sistema | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-06 | Rutas | Acceder sin sesión a una ruta protegida | Al intentar ingresar a una ruta protegida sin sesión se debe dirigir hacia el login | Tras indicar la ruta URL protegida sin sesión se contempla el retorno hacia el login | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-07 | Residente | Crear visita con datos válidos | Al registrar una nueva visita se debe mostrar como pendiente en el dashboard | Tras registrar una nueva visita se contempla el estado de pendiente por ingreso en el dashboard | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-08 | Residente | Generar pase | Al registrar una visita se debe mostrar QR y PIN asociados visibles para que el residente los comparta | Tras registrar una visita se contempla la generación del código QR y PIN | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-09 | Residente | Consultar QR personal | Al ser residente e ingresar a la sección Mi QR, se debe mostrar QR y PIN propios visibles | Tras ingresar como residente se contempla en el panel de "Mi QR" el QR y PIN propios del residente | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-10 | Vigilante | Escanear QR de visitante | Al tener una visita pendiente de visitante se debe poder validar mediante su código QR mostrando sus datos antes de confirmar ingreso | Tras accionar el escaneo de QR sobre una visita pendiente se contempla la visualización de datos del visitante y la posterior confirmación de ingreso | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-11 | Vigilante | Validar PIN de visitante | Al ingresar PIN válido, se debe mostrar datos del visitante para validación y posterior confirmación de ingreso | Tras ingresar PIN válido se contemplan datos del visitante para su validación y se muestra modal de confirmación de ingreso | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-12 | Vigilante | Validar QR de residente | Al tener un código QR de un residente se debe poder validar su ingreso mediante el escaneo, mostrando datos del residente y posterior confirmación de ingreso | Tras accionar el escaneo del código QR de un residente se contemplan sus datos para validación y la posterior confirmación del ingreso | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-13 | Vigilante | Validar PIN inválido | Al ingresar un PIN inválido se debe mostrar un mensaje indicando error | Tras ingresar un PIN inválido se contempla un mensaje indicando PIN no válido o no encontrado | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-14 | Notificaciones | Confirmar ingreso de visitante | Al confirmar ingreso de visitante se debe contemplar correo de notificación al usuario | Tras confirmar el ingreso se contempla el mensaje de notificación de llegada en la bandeja de correos del residente | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-15 | Historial admin | Consultar historial global | Al ingresar como administrador a la sección de historial se debe mostrar los datos existentes | Tras ingresar como personal administrativo a la sección de historial se contemplan los registros existentes | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-16 | Historial admin | Filtrar por fecha y tipo | Al accionar los filtros para una fecha y tipo de visita se debe mostrar los registros correspondientes | Tras accionar los filtros de fecha y tipo de visita se contemplan los datos correspondientes a los filtros aplicados | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-17 | Historial vigilante | Consultar historial personal | Al consultar como vigilante el historial se debe mostrar solo los ingresos validados por el vigilante | Tras acceder al historial con sesión de vigilante se contemplan los ingresos validados por el mismo vigilante | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-18 | Usuarios | Crear usuario | Al acceder como personal administrativo a la sección de usuarios se debe mostrar botón para crear usuarios y asignar su rol | Tras ingresar con sesión administrativa se contempla en la sección de usuarios el botón para crear nuevos usuarios con su rol | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-19 | Usuarios | Editar usuario | Al acceder como personal administrativo a la sección de usuarios se debe tener capacidad de editar un usuario y reflejar sus cambios | Tras acceder al módulo de usuarios se contempla el botón para editar usuarios existentes, reflejando los cambios al guardar | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-20 | Usuarios | Eliminar usuario | Al acceder como personal administrativo a la sección de edición de usuario se debe mostrar botón para eliminar usuario | Tras acceder a la edición de usuarios se contempla el botón para eliminar, reflejando el cambio en la lista de usuarios existentes | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-21 | Propiedades | Crear propiedad | Al acceder al módulo de propiedades se debe mostrar un botón para adicionar nuevas propiedades | Tras acceder al módulo de propiedades se contempla el botón para adicionar nuevas propiedades, reflejando la adición en la lista | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-22 | Propiedades | Editar o eliminar propiedad | Al acceder al módulo de propiedades se debe mostrar botón para permitir la edición o eliminación de una propiedad | Tras acceder al módulo de propiedades se contemplan los botones de edición y eliminación; al ser accionados se reflejan los cambios en la lista | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-23 | IA | Generar resumen diario | Al acceder al dashboard de personal administrativo se debe mostrar apartado de resumen del día con botón para generar el reporte | Tras accionar el botón de generar reporte se contempla un resumen reflejando los movimientos del día | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
+| PF-24 | Expiración | Consultar visita con fecha pasada | Al crear una visita y pasar la fecha esperada de la visita sin ingreso validado se debe mostrar el estado expirado | Tras crear una invitación sin validar en su fecha esperada, al pasar la fecha se refleja el estado expirado | PASSED | https://drive.google.com/drive/folders/1kDrG_TbrqWHcX4cjn49A6BpiIeFS5aMR?usp=drive_link |
 
 ### 4.3 Procedimiento de Ejecución
 
@@ -382,19 +381,10 @@ No se envían nombres ni datos personales de visitantes al prompt. Si Gemini no 
 #### Evidencias del proceso
 
 > **[CAPTURA IA-01]** Dashboard administrativo antes de generar el resumen  
-> *[Insertar captura del botón o sección "Resumen del Día"]*
+> *[Disponible en el informe en PDF]*
 
-> **[CAPTURA IA-02]** Datos agregados consultados para el día  
-> *[Insertar captura de las estadísticas mostradas o de la evidencia de datos de prueba]*
-
-> **[CAPTURA IA-03]** Solicitud enviada a Gemini  
-> *[Insertar captura del flujo de ejecución o configuración utilizada, sin mostrar API keys]*
-
-> **[CAPTURA IA-04]** Resumen generado en el dashboard  
-> *[Insertar captura del resultado devuelto por Gemini]*
-
-> **[CAPTURA IA-05]** Fallback local ante indisponibilidad de Gemini  
-> *[Insertar captura del resumen local o marcar como no aplica si no se ejecuta esta variante]*
+> **[CAPTURA IA-02]** Fallback local ante indisponibilidad de Gemini  
+> *[Disponible en el informe en PDF]*
 
 ### 6.6 Prompt utilizado
 
@@ -681,8 +671,3 @@ La aplicación envía los datos mediante una solicitud POST en formato JSON a la
 - Vercel.
 
 ---
-
-
-**Documento generado:** Septiembre 2026  
-**Estado:** Informe final consolidado.  
-**Pruebas funcionales:** 24 casos definidos para ejecución manual.
